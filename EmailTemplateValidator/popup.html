@@ -1,14 +1,166 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="button.css">
+    <script src="jquery.min.js"></script>
   </head>
-  <body style="width: 400px;">
-      <div>
-          <h1>Hi how are you?</h1>
-          <P>Designation for toolbar icons is also included under action in the default_icon field. Download the images folder here, unzip it, and place it in the extension's directory. Update the manifest so the extension knows how to use the images.</P>
-      </div>
-    <button id="changeColor">Change my colour</button>
-    <script src="popup.js"></script>
+  <body style='width: 400px'>
+    <div>
+      <h1>Email Template validator</h1>
+    </div>
+    
+    <div>
+      <fieldset>
+        <legend>Validate HTML attributes</legend>
+        <table>
+          <tr>
+            <td>Please enter HTML tags and respective attributes which needs to be validated</td>
+          </tr>
+          <tr>
+            <td>
+              <textarea id="htmlAttributes" name="htmlAttributes" rows="4" cols="40">a:href&#013;img: src,alt
+              </textarea>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: right;">
+              <input type="button" id="btnValidateAttributes" value="Validate Attribute"></input>
+            </td>
+          </tr>
+        </table>
+    </div>
+
+    <div>
+      <fieldset>
+        <legend>Pull data from Figma</legend>
+        <table>
+          <tr>
+            <td>Please enter figma file name</td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="txtFigmaFile"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>Please enter figma node-id</td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="txtFigmaNodeId"></input>
+            </td>
+          </tr>
+          <tr>
+            <td>Please enter figma personal access token <a href="https://www.figma.com/developers/api#intro" target="_blank">From here</a></td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="txtFigmaPAT"></input>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: right;">
+              <input type="button" id="btnPullContent" value="Pull content"></input>
+            </td>
+          </tr>
+        </table>
+    </div>
+    <div>
+      <fieldset>
+        <legend>Link Validator</legend>
+        <table>
+          <tr>
+            <td style="text-align: right;">
+              <input type="button" id="btnValidateLink" value="Validate Link"></input>
+            </td>
+          </tr>
+        </table>
+    </div>
+    <fieldset>
+      <legend>Validate HTML content</legend>
+      <table>
+        <tr>
+          <td></td>
+        </tr>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td colspan='3'>Select ctrl to validate</td>
+              </tr>
+              <tr>
+                <td>
+                  <input class='ctrl-chkbox' type='checkbox' name='h1'>
+                  <label for='h1'>H1</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='h2'>
+                  <label for='h2'> H2</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='h3'>
+                  <label for='h3'> H3</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='h4'>
+                  <label for='h4'> H4</label><br>
+                </td>
+                <td>
+                  <input class='ctrl-chkbox' type='checkbox' name='p'>
+                  <label for='p'>Paragraph(P)</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='a'>
+                  <label for='a'> Anchor(a)</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='img'>
+                  <label for='img'> Image (img)</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='button'>
+                  <label for='button'> button (btn)</label><br>
+                </td>
+                <td style='vertical-align: top;'>
+                  <input class='ctrl-chkbox' type='checkbox' name='input'>
+                  <label for='input'>Input tag</label><br>
+                  <input  class='ctrl-chkbox' type='checkbox' name='span'>
+                  <label for='span'> Span</label><br>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Select Source File
+            <input type="file" id="src-lcaol-file">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type='checkbox' name='ignore-anchro-inside-ctrls' id='ignore-anchro-inside-ctrls'>
+            <label for='input'>Ignore the element(s) if it is inside P or H tag</label><br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%">
+              <tr>
+                <td>
+                  <input type="button" id="exampleFileGenerator" value="Generate Example validation file"></input>
+                </td>
+                <td><input type="button" class='submit-button' id='btnValidateTag' value='Validate'></input></td>
+              </tr>
+            </table>
+            
+          </td>
+        </tr>
+        
+      </table>
+    </fieldset>
+    <br/>
+    <fieldset>
+      <legend>Enable Visual Editor</legend>
+      <table width = "100%">
+        <tr>
+          <td>
+            <input type="button" id="enableVisualEditor" value="Enable Visual Editor"></input>
+          </td>
+          <td>
+            <input type="button" id="saveDOM" value="Save Page" disabled></input>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+    <p><span id="validationError" class="error-message" style="color: brown;"></span></p>
+    <script src='popup.js'></script>
+    <link rel='stylesheet' href='common.css' />
   </body>
 </html>
