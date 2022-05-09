@@ -11,25 +11,43 @@ figmaPullContent.addEventListener("click", async () => {
   var figmaFile = document.getElementById("txtFigmaFile");
   var figmaNode = document.getElementById("txtFigmaNodeId");
   var token = document.getElementById("txtFigmaPAT");
+  // url: `https://api.figma.com/v1/files/NOLD0VqlLthvIPKRoU3M3A/nodes?ids=511:5617`,
+  var figmaPageId=figmaFile.value;
+  var figmaNodeId=figmaNode.value;
+  var figmaUrl=`https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
+  alert(`Figma Api Requested -> ${figmaUrl}`);
 
   $.ajax({
     type: "GET",
-    url: "https://api.figma.com/v1/files/NOLD0VqlLthvIPKRoU3M3A/nodes?ids=511:5617",
-    headers: { "X-Figma-Token": "" },
+    url: figmaUrl,
+    headers: { "X-Figma-Token": "376646-3fac65f7-6fb8-4bd6-8bb2-956ed4cc1e77" },
     success: function (res) {
-      var nodestyles = res.nodes['511:5617'].styles;
-      var filteredResult = res.nodes["511:5617"].document.children.filter(function (obj) {
-        return obj.type == "FRAME";
-      });
-      var childs = []
+      var nodestyles = res.nodes[figmaNodeId].styles;
+      // var filteredResult = res.nodes[figmaNodeId].document.children.filter(function (obj) {
+      //   return obj.type == "FRAME";
+      // });
+      // var childs = []
       // filteredResult.forEach(element => {
       //   GetChild(element, childs);
       // });
       
-      GetChild(filteredResult[0], childs);
+      // GetChild(filteredResult[0], childs);
+      var nodestyles = res.nodes[figmaNodeId].styles;
+      // var filteredResult = data.nodes[document_node_id].document.children.filter(function (obj) {
+      //     return obj.type == "FRAME";
+      // });
+      var filteredResult = res.nodes[figmaNodeId].document.children;
+      var childs = []
+
+      // Get all child items and recurse through all nodes
+      GetChild(filteredResult, childs);
+
       var secFilter = [];
       var prevVal = '';
+      var justTextContent=[];
+
       childs.forEach(element => {
+
         //Find text container type, h1/h2,etc
 
         if (element.type === "VECTOR"){
@@ -52,14 +70,38 @@ figmaPullContent.addEventListener("click", async () => {
           secFilter.push(element);
 
         } else if (element.type === "TEXT"){
+
+          var ctrlType = "";
           if(element.styles){
-            element.ctrlType = nodestyles[element.styles.text?element.styles.text:element.styles.fill].name;
+              ctrlType = nodestyles[element.styles.text?element.styles.text:element.styles.fill].name;
           }
+
+          if (element.name='button'){
+              ctrlType = "a";
+          }
+
+          element.ctrlType = ctrlType;
+
+          var content  = element.characters.replace('\n', '')
+          justTextContent.push({'section_name':element.name, 'text': content, 'ctlType': ctrlType});
+
           secFilter.push(element);
         }else {
           secFilter.push(element);
         }
       });
+
+      
+      justTextContent.forEach(item=> {
+          console.info(item);
+      })
+      localStorage.setItem('FigmaNodeChars', JSON.stringify(justTextContent));
+      alert(`Total content items saved in localstorage --> ${justTextContent.length}`);
+      var itemsInStorage  = localStorage.getItem('FigmaNodeChars');
+      console.info(itemsInStorage);
+      // const formatter = new JSONFormatter(justTextContent);
+      // // $("#pageJson").append(formatter.render());
+      // document.body.appendChild(formatter.render());
       
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -72,18 +114,29 @@ figmaPullContent.addEventListener("click", async () => {
   });
 });
 
-function GetChild(node, lists){
-  if(node.children && node.children.length > 0){
-    node.children.forEach(child => {
-      if(child.children && child.children.length > 0){
-        GetChild(child, lists);
-      } else {
-        lists.push(child);
-      }
-    });
+// function GetChild(node, lists){
+//   if(node.children && node.children.length > 0){
+//     node.children.forEach(child => {
+//       if(child.children && child.children.length > 0){
+//         GetChild(child, lists);
+//       } else {
+//         lists.push(child);
+//       }
+//     });
     
-  }
+//   }
+// }
+
+function GetChild(nodes, lists){
+  nodes.forEach(child => {
+      if(child.children && child.children.length > 0){
+          GetChild(child.children, lists);
+      } else {
+          lists.push(child);
+      }
+  });
 }
+
 function PullFigmaData() {}
 
 linkValidator.addEventListener("click", async () => {
@@ -470,9 +523,16 @@ function GetDOMStructureFromCurrentTab(ctrls) {
     if (source === "#") {
       source = null;
     }
+    var ctlvalue = nodes[i].outerText.replace(/"/g, '""');
+    ctlvalue = '"' + ctlvalue + '"';
+
+    ctlvalue = ctlvalue.replace(/\u00a0/g, " ")
+
+    ctlvalue = ctlvalue.replace(/\u200C/g, '')
+
     var ctrl = [
       nodes[i].nodeName,
-      nodes[i].outerText,
+      ctlvalue,
       source,
       nodes[i].getAttribute("alt"),
     ];
