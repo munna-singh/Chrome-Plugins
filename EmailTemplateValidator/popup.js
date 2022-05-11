@@ -140,6 +140,9 @@ function GetChild(nodes, lists){
 function PullFigmaData() {}
 
 linkValidator.addEventListener("click", async () => {
+  // Get the in progress text
+  document.getElementById("validationinprogress").innerHTML ="Validation is in progress ...";
+  linkValidator.disabled = true;
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
@@ -148,92 +151,66 @@ linkValidator.addEventListener("click", async () => {
 });
 
 function ValidateHrefLinks() {
-  var divTag = document.createElement("div");
-  divTag.setAttribute("id", "my-gale-popup-modal-links");
-  divTag.setAttribute("class", "modal");
-  divTag.innerHTML = `
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <table>
-            <tr>
-                <td> <span id='validationResult'>Validating links. Please wait...</span></td>
-                <td></td>
-            </tr>
-        </table>
-        
-    </div>
-    `;
-  // add it to the head
-  if (document.getElementById("my-gale-popup-modal-links") === null) {
-    const body = document.getElementsByTagName("body")[0];
-    body.appendChild(divTag);
-  }
-
-  // Get the modal
-  var modal = document.getElementById("my-gale-popup-modal-links");
-  modal.style.display = "block";
-
   //Get validation result span
   var spanResult = document.getElementById("validationResult");
-  var urls = [];
-
+  var urls = {};
+  var req_params = [];
   var links = document.querySelectorAll("a");
   links.forEach((link) => {
     const val = link.getAttribute("href");
     if (val !== "#" && val !== "" && val !== "/" && val != null) {
+      req_params.push(link.href);
       var oneurl = {
         text: link.innerText,
         link: link.href,
         redirectlink: "",
       };
-      urls.push(oneurl);
+      urls[link.href] = oneurl;
     }
   });
 
-  if (urls.length > 0) {
+  if (req_params.length > 0) {
     $.ajax({
       type: "POST",
-      url: "http://localhost:70/validate.php/LinkValidation/validate",
-      data: JSON.stringify(urls),
+      url: "https://bweetsuyqkdnzjtzpe4ahndk7u0botiy.lambda-url.us-west-2.on.aws/",
+      data: JSON.stringify(req_params),
       success: function (res) {
-        var tbl = "<table>";
-        res.forEach((element) => {
-          tbl += "<tr>";
-          tbl += "<td>" + element.text + "</td>";
-          tbl += "<td>" + element.link + "</td>";
-          tbl += "<td>" + element.redirectURL + "</td>";
-          tbl += "<td>" + element.responseCode + "</td>";
-          tbl += "</tr>";
+        var csv = "Link_Text,Original_Link, Resp_Code, Redirect_url\n";
+        res.forEach(function (row) {
+          csv += `${urls[row.source_url].text},${row.source_url},${row.response_code},${row.redirect_url}\n` ;
         });
-        tbl += "</table>";
-        spanResult.innerHTML = tbl;
+
+        var hiddenElement = document.createElement("a");
+        hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+        hiddenElement.target = "_blank";
+        hiddenElement.download = "Link_Validation_Report.csv";
+        hiddenElement.click();
       },
       error: function (XMLHttpRequest, textStatus, errorThrown) {
         alert(
           "Unable to fullfill the request right now. Please try after some time."
         );
       },
-      dataType: "json",
-      async: false,
+      contentType : 'text/plain; charset=UTF-8',
+      async: false
     });
   }
 }
 
-function hooray(json) {
-  // dealin wit teh jsonz
-  console.log(json);
-}
-
 saveDOM.addEventListener("click", async () => {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  let fileName = document.getElementById("txteditedfilename").value;
+  if(fileName == ''){
+    fileName = "modifiedPage";
+  }
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: saveDOMAndDownload,
+    args: [fileName],
   });
 });
 
-function saveDOMAndDownload() {
+function saveDOMAndDownload(file_name) {
   //Remove injected code from DOM:
   //Popup
   const popDiv = document.getElementById("my-gale-popup-modal");
@@ -259,7 +236,7 @@ function saveDOMAndDownload() {
   hiddenElement.href =
     "data:text/plain;charset=utf-8," + encodeURIComponent(dom);
   hiddenElement.target = "_blank";
-  hiddenElement.download = "modifiedPage.html";
+  hiddenElement.download = file_name + ".html";
   hiddenElement.click();
 }
 
@@ -298,6 +275,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     }
   }
 
+  console.log(ctrlWithIssue);
   if (ctrlWithIssue.length > 0) {
     alert("Has issue with the control");
     // create a style element

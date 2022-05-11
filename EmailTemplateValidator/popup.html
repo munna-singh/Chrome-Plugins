@@ -70,6 +70,7 @@
             <td style="text-align: right;">
               <input type="button" id="btnValidateLink" value="Validate Link"></input>
             </td>
+            <span id="validationinprogress" style="font-size:10px; color:blue"></span>
           </tr>
         </table>
     </div>
@@ -151,6 +152,9 @@
         <tr>
           <td>
             <input type="button" id="enableVisualEditor" value="Enable Visual Editor"></input>
+          </td>
+          <td>
+            <input type="text" id="txteditedfilename" placeholder="file name..."></input>
           </td>
           <td>
             <input type="button" id="saveDOM" value="Save Page" disabled></input>
