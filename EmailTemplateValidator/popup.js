@@ -277,7 +277,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
 
   console.log(ctrlWithIssue);
   if (ctrlWithIssue.length > 0) {
-    alert("Has issue with the control");
+    alert("Has issue with the control. Please check console log for details.");
     // create a style element
     const style = document.createElement("style");
 
@@ -298,6 +298,8 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
       style.setAttribute("id", "my-gale-error-message-css");
       head.appendChild(style);
     }
+  } else {
+    alert("Validation is successful.")
   }
 }
 
