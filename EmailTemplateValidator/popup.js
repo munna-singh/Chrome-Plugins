@@ -6,6 +6,7 @@ var htmlAttributeText = document.getElementById("htmlAttributes");
 var saveDOM = document.getElementById("saveDOM");
 var linkValidator = document.getElementById("btnValidateLink");
 var figmaPullContent = document.getElementById("btnPullContent");
+var validateMatchOptCtrl = document.getElementById("match_options");
 
 figmaPullContent.addEventListener("click", async () => {
   var figmaFile = document.getElementById("txtFigmaFile");
@@ -16,7 +17,7 @@ figmaPullContent.addEventListener("click", async () => {
   var figmaNodeId=figmaNode.value;
   var figmaUrl=`https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
   alert(`Figma Api Requested -> ${figmaUrl}`);
-
+  
   $.ajax({
     type: "GET",
     url: figmaUrl,
@@ -254,16 +255,26 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
   //a: href
   var ctrls = ctrlsWithAttributes.split("\r");
   var ctrlWithIssue = [];
+  var errorCtl = {};
   for (i = 0; i < ctrls.length; i++) {
     var ctrl = ctrls[i].split(":")[0];
     var attrs = ctrls[i].split(":")[1].replace("\n", "").trim().split(",");
     var nodes = document.querySelectorAll(ctrl);
     var valueEmpty = false;
+    if (!errorCtl.hasOwnProperty(ctrl)){
+      errorCtl[ctrl]=[];
+    }
+    allControls=[];
     for (x = 0; x < nodes.length; x++) {
+
       for (y = 0; y < attrs.length; y++) {
         var source = nodes[x].getAttribute(attrs[y]);
         if (source === "#" || source === "" || source === undefined) {
           valueEmpty = true;
+          control={};
+          control[nodes[x].innerText]=[];
+          control[nodes[x].innerText].push(attrs[y]);
+          allControls.push(control);
           break;
         }
       }
@@ -273,9 +284,10 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
         valueEmpty = false;
       }
     }
+    errorCtl[ctrl].push(allControls);
   }
 
-  console.log(ctrlWithIssue);
+  console.log(errorCtl);
   if (ctrlWithIssue.length > 0) {
     alert("Has issue with the control. Please check console log for details.");
     // create a style element
@@ -284,7 +296,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     // add the CSS as a string using template literals
     style.appendChild(
       document.createTextNode(`
-        .gale-validation-error-box { 
+        .gale-validation-error-box {
           border-radius: 2px;
           border-color: red;
           border-width: 5px;
@@ -503,6 +515,7 @@ function GetDOMStructureFromCurrentTab(ctrls) {
     if (source === "#") {
       source = null;
     }
+    ctrlId = nodes[i].getAttribute("Id");
     var ctlvalue = nodes[i].outerText.replace(/"/g, '""');
     ctlvalue = '"' + ctlvalue + '"';
 
@@ -512,13 +525,14 @@ function GetDOMStructureFromCurrentTab(ctrls) {
 
     var ctrl = [
       nodes[i].nodeName,
+      ctrlId,
       ctlvalue,
       source,
       nodes[i].getAttribute("alt"),
     ];
     data.push(ctrl);
   }
-  var csv = "Ctrl,Text, Link, Alt\n";
+  var csv = "Ctrl, Id, Text, Link, Alt\n";
   data.forEach(function (row) {
     csv += row.join(",");
     csv += "\n";
