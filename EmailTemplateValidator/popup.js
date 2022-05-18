@@ -16,7 +16,7 @@ figmaPullContent.addEventListener("click", async () => {
   var figmaNodeId=figmaNode.value;
   var figmaUrl=`https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
   alert(`Figma Api Requested -> ${figmaUrl}`);
-
+  
   $.ajax({
     type: "GET",
     url: figmaUrl,
@@ -254,16 +254,26 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
   //a: href
   var ctrls = ctrlsWithAttributes.split("\r");
   var ctrlWithIssue = [];
+  var errorCtl = {};
   for (i = 0; i < ctrls.length; i++) {
     var ctrl = ctrls[i].split(":")[0];
     var attrs = ctrls[i].split(":")[1].replace("\n", "").trim().split(",");
     var nodes = document.querySelectorAll(ctrl);
     var valueEmpty = false;
+    if (!errorCtl.hasOwnProperty(ctrl)){
+      errorCtl[ctrl]=[];
+    }
+    allControls=[];
     for (x = 0; x < nodes.length; x++) {
+
       for (y = 0; y < attrs.length; y++) {
         var source = nodes[x].getAttribute(attrs[y]);
         if (source === "#" || source === "" || source === undefined) {
           valueEmpty = true;
+          control={};
+          control[nodes[x].innerText]=[];
+          control[nodes[x].innerText].push(attrs[y]);
+          allControls.push(control);
           break;
         }
       }
@@ -273,9 +283,10 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
         valueEmpty = false;
       }
     }
+    errorCtl[ctrl].push(allControls);
   }
 
-  console.log(ctrlWithIssue);
+  console.log(errorCtl);
   if (ctrlWithIssue.length > 0) {
     alert("Has issue with the control. Please check console log for details.");
     // create a style element
@@ -284,7 +295,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     // add the CSS as a string using template literals
     style.appendChild(
       document.createTextNode(`
-        .gale-validation-error-box { 
+        .gale-validation-error-box {
           border-radius: 2px;
           border-color: red;
           border-width: 5px;
@@ -503,6 +514,7 @@ function GetDOMStructureFromCurrentTab(ctrls) {
     if (source === "#") {
       source = null;
     }
+    ctrlId = nodes[i].getAttribute("Id");
     var ctlvalue = nodes[i].outerText.replace(/"/g, '""');
     ctlvalue = '"' + ctlvalue + '"';
 
@@ -512,13 +524,14 @@ function GetDOMStructureFromCurrentTab(ctrls) {
 
     var ctrl = [
       nodes[i].nodeName,
+      ctrlId,
       ctlvalue,
       source,
       nodes[i].getAttribute("alt"),
     ];
     data.push(ctrl);
   }
-  var csv = "Ctrl,Text, Link, Alt\n";
+  var csv = "Ctrl, Id, Text, Link, Alt\n";
   data.forEach(function (row) {
     csv += row.join(",");
     csv += "\n";
@@ -531,92 +544,190 @@ function GetDOMStructureFromCurrentTab(ctrls) {
   hiddenElement.click();
 }
 
-function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl) {
+function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCtrlValue) {
   if (!sourceFileData) {
     return;
   }
+
+  // clearPreviousErrors();
   //Clear previous error message by removing the class
   var errorCtrls = document.querySelectorAll(".gale-validation-error-box");
   for (y = 0; y < errorCtrls.length; y++) {
     errorCtrls[y].classList.remove("gale-validation-error-box");
   }
-
-  let allRows = sourceFileData.split(/\r?\n|\r/);
+  
+  console.log(`Validation by - ${validateOptionsCtrlValue}`);
+  if (validateOptionsCtrlValue=='id'){
+    var errorCtrls=[];
+    let allRows = sourceFileData.split(/\r?\n|\r/);
+  
   //Filter data
-  let filteredSourceRow = [];
-  for (x = 1; x < allRows.length; x++) {
-    let splited = allRows[x].split(",");
-    if (
-      ctrls.find((element) => element.toUpperCase() == splited[0].toUpperCase())
-    ) {
-      filteredSourceRow.push(splited);
+  // console.log(CSV_COLUMNS);
+    let filteredSourceRow = [];
+    for (x = 1; x < allRows.length; x++) {
+      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+      // console.log(splited);
+      if (splited[1]){
+        filteredSourceRow.push(splited);
+      }
+    }
+  
+    for (i = 0; i < filteredSourceRow.length; i++) {
+      // console.log(filteredSourceRow[i])
+      var ctrlId_Csv= filteredSourceRow[i][1];
+      var ctrlText_Csv= filteredSourceRow[i][2].replaceAll('"', '');
+      var controlDoc=document.getElementById(ctrlId_Csv);
+      if (!controlDoc){
+        continue
+      }
+
+      ctrlName = controlDoc.tagName;
+      ctrlId = controlDoc.getAttribute("Id");
+      
+      ctlvalue = controlDoc.outerText;
+      ctlvalue = ctlvalue.replaceAll('"', '');
+      ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
+      ctlvalue = ctlvalue.replace(/\u200C/g, '');
+      ctlvalue = ctlvalue.trim();
+
+      var source= "";
+      if (ctrlName === "A") {
+        source = controlDoc.getAttribute("href");
+      } else if (ctrlName === "IMG") {
+        source = controlDoc.getAttribute("src");
+      }
+      if (source === "#" || source === null) {
+        source = "";
+      }
+
+      let altText = controlDoc.getAttribute("alt");
+      if (
+        altText === undefined ||
+        altText === null
+      ) {
+        altText = "";
+      }
+
+      combinedData = ctrlName + "," + ctrlId + "," + ctlvalue + "," + source + "," + altText;
+
+      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', '');
+      var combinedCsvRow = filteredSourceRow[i].join(",");
+
+      // console.log(ctrlText_Csv);
+      if (combinedData!==combinedCsvRow){
+        console.log(`Mismatch content:> Row No - ${i+1}---> \n ${combinedCsvRow}`);
+        controlDoc.classList.add("gale-validation-error-box");
+        errorCtrls.push(controlDoc);
+      }
     }
   }
+  else{
+    let allRows = sourceFileData.split(/\r?\n|\r/);
+    //Filter data
+    let filteredSourceRow = [];
+    for (x = 1; x < allRows.length; x++) {
+      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      // console.log(splited);
+      if (splited.length==5 &&
+        ctrls.find((element) => element.toUpperCase() == splited[0].toUpperCase())
+      ) {
+        // console.log(splited);
+        filteredSourceRow.push(splited);
+      }
 
-  var nodes = document.querySelectorAll(ctrls.join(","));
-  var filteredNode = [];
-  for (i = 0; i < nodes.length; i++) {
-    if (ignoreNestedCtrl) {
-      const parentNode = nodes[i].parentNode.nodeName;
-      if (!parentNode.startsWith("H") && !parentNode.startsWith("P")) {
+    }
+  
+    var nodes = document.querySelectorAll(ctrls.join(","));
+    var filteredNode = [];
+    for (i = 0; i < nodes.length; i++) {
+      if (ignoreNestedCtrl) {
+        const parentNode = nodes[i].parentNode.nodeName;
+        if (!parentNode.startsWith("H") && !parentNode.startsWith("P")) {
+          filteredNode.push(nodes[i]);
+        }
+      } else {
         filteredNode.push(nodes[i]);
       }
-    } else {
-      filteredNode.push(nodes[i]);
     }
-  }
-  if (filteredSourceRow.length !== nodes.length) {
-    alert(
-      "Source column count(" +
-        filteredSourceRow.length +
-        ") and page control count(" +
-        nodes.length +
-        ") does not match."
-    );
-    return;
-  }
-  var errorCtrls = [];
-  for (i = 0; i < filteredSourceRow.length; i++) {
-    var nodeName = filteredNode[i].nodeName;
-    var source = null;
+    if (filteredSourceRow.length !== nodes.length) {
+      alert(
+        "Source column count(" +
+          filteredSourceRow.length +
+          ") and page control count(" +
+          nodes.length +
+          ") does not match."
+      );
+      return;
+    }
 
-    if (nodeName === "A") {
-      source = nodes[i].getAttribute("href");
-    } else if (nodeName === "IMG") {
-      source = nodes[i].getAttribute("src");
-    }
-    if (source === "#" || source === null) {
-      source = "";
-    }
-    let ctrlText = filteredNode[i].outerText;
-    if (
-      filteredNode[i].outerText === undefined ||
-      filteredNode[i].outerText === null
-    ) {
-      ctrlText = "";
-    }
-    let altText = filteredNode[i].getAttribute("alt");
-    if (
-      filteredNode[i].getAttribute("alt") === undefined ||
-      filteredNode[i].getAttribute("alt") === null
-    ) {
-      altText = "";
-    }
-    let compareString =
-      nodeName + "," + ctrlText + "," + source + "," + altText;
+    var errorCtrls = [];
+    for (i = 0; i < filteredSourceRow.length; i++) {
+      var nodeName = filteredNode[i].nodeName;
+      var source = null;
+  
+      if (nodeName === "A") {
+        source = nodes[i].getAttribute("href");
+      } else if (nodeName === "IMG") {
+        source = nodes[i].getAttribute("src");
+      }
+      if (source === "#" || source === null) {
+        source = "";
+      }
+      let ctlId = filteredNode[i].getAttribute("Id");
+      if (
+        ctlId === undefined ||
+        ctlId === null
+      ) {
+        ctlId = "";
+      }
+      
+      let ctrlText = filteredNode[i].innerText;
+      if (
+        filteredNode[i].innerText === undefined ||
+        filteredNode[i].innerText === null
+      ) {
+        ctrlText = "";
+      }
+      else{
+        ctrlText = ctrlText.replaceAll('"', '');
+        ctrlText = ctrlText.replace(/\u00a0/g, " ");
+        ctrlText = ctrlText.replace(/\u200C/g, '');
+        ctrlText = ctrlText.trim();
+      }
 
-    if (filteredSourceRow[i].join(",") !== compareString) {
-      filteredNode[i].classList.add("gale-validation-error-box");
-      errorCtrls.push(filteredNode[i]);
+      let altText = filteredNode[i].getAttribute("alt");
+      if (
+        filteredNode[i].getAttribute("alt") === undefined ||
+        filteredNode[i].getAttribute("alt") === null
+      ) {
+        altText = "";
+      }
+      
+      let compareString =
+      nodeName + "," + ctlId + "," + ctrlText + "," + source + "," + altText;
+
+      // Replace if any double quotes present on value text
+      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', '');
+      var combinedCsvRow = filteredSourceRow[i].join(",");
+  
+      if (combinedCsvRow !== compareString) {
+        console.log(`Mismatch content:> Row No - ${i+1}---> \n`)
+        console.log(combinedCsvRow);
+        filteredNode[i].classList.add("gale-validation-error-box");
+        errorCtrls.push(filteredNode[i]);
+      }
+
     }
   }
+  
+
   if (errorCtrls.length === 0) {
     alert("Validation successful. No discrepancy detected!!!");
   } else {
     alert(
       "Validation error. Please check console log for list of controls which has issue"
     );
-    console.log(errorCtrls);
+    // console.log(errorCtrls);
     // create a style element
     const style = document.createElement("style");
 
@@ -638,6 +749,9 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl) {
 }
 
 validateTag.addEventListener("click", async () => {
+  // console.log(CSV_COLUMNS);
+  validateOptionsCtrl = document.getElementById("match_options"); // validate options control
+  // console.log(validateOptionsCtrl.value);
   var srcFile = document.getElementById("src-lcaol-file");
   var ctrlToValidate = document.querySelectorAll(".ctrl-chkbox:checked");
   var ignoreNestedCtrl = document.getElementById(
@@ -663,7 +777,7 @@ validateTag.addEventListener("click", async () => {
         chrome.scripting.executeScript({
           target: { tabId: tab.id },
           func: ValidateNode,
-          args: [e.target.result, seletedCtrls, ignoreNestedCtrl],
+          args: [e.target.result, seletedCtrls, ignoreNestedCtrl, validateOptionsCtrl.value],
         });
       });
       reader.readAsText(sourceFile, "UTF-8");
