@@ -717,25 +717,8 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
         errorCtrls.push(filteredNode[i]);
       }
 
-      // var csvText = filteredSourceRow[i][2].replaceAll('"', '');
-
-      // if (csvText !== ctrlText) {
-      //   console.log(filteredNode[i]);
-      //   console.log(ctrlText);
-      //   console.log(csvText);
-      //   filteredNode[i].classList.add("gale-validation-error-box");
-      //   errorCtrls.push(filteredNode[i]);
-      // }
-
     }
   }
-  
-
-  // //Clear previous error message by removing the class
-  // var errorCtrls = document.querySelectorAll(".gale-validation-error-box");
-  // for (y = 0; y < errorCtrls.length; y++) {
-  //   errorCtrls[y].classList.remove("gale-validation-error-box");
-  // }
   
 
   if (errorCtrls.length === 0) {
