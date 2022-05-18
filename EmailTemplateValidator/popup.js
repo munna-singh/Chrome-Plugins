@@ -615,7 +615,7 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
 
       // console.log(ctrlText_Csv);
       if (combinedData!==combinedCsvRow){
-        console.log(`Mismatch content:> Row No - ${i}---> \n ${combinedCsvRow}`);
+        console.log(`Mismatch content:> Row No - ${i+1}---> \n ${combinedCsvRow}`);
         controlDoc.classList.add("gale-validation-error-box");
         errorCtrls.push(controlDoc);
       }
@@ -711,7 +711,7 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
       var combinedCsvRow = filteredSourceRow[i].join(",");
   
       if (combinedCsvRow !== compareString) {
-        console.log(`Mismatch content:> Row No - ${i}---> \n`)
+        console.log(`Mismatch content:> Row No - ${i+1}---> \n`)
         console.log(combinedCsvRow);
         filteredNode[i].classList.add("gale-validation-error-box");
         errorCtrls.push(filteredNode[i]);
