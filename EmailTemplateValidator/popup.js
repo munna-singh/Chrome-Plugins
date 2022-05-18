@@ -114,18 +114,6 @@ figmaPullContent.addEventListener("click", async () => {
   });
 });
 
-// function GetChild(node, lists){
-//   if(node.children && node.children.length > 0){
-//     node.children.forEach(child => {
-//       if(child.children && child.children.length > 0){
-//         GetChild(child, lists);
-//       } else {
-//         lists.push(child);
-//       }
-//     });
-    
-//   }
-// }
 
 function GetChild(nodes, lists){
   nodes.forEach(child => {
@@ -136,8 +124,6 @@ function GetChild(nodes, lists){
       }
   });
 }
-
-function PullFigmaData() {}
 
 linkValidator.addEventListener("click", async () => {
   // Get the in progress text
@@ -169,15 +155,18 @@ function ValidateHrefLinks() {
     }
   });
 
+  var formatted_payload = {
+    urls:req_params
+  }
   if (req_params.length > 0) {
     $.ajax({
       type: "POST",
-      url: "https://bweetsuyqkdnzjtzpe4ahndk7u0botiy.lambda-url.us-west-2.on.aws/",
-      data: JSON.stringify(req_params),
+      url: "https://4wu4egnqg3retjm776umbrge440dcmar.lambda-url.us-west-2.on.aws/",
+      data: JSON.stringify(formatted_payload),
       success: function (res) {
         var csv = "Link_Text,Original_Link, Resp_Code, Redirect_url\n";
         res.forEach(function (row) {
-          csv += `${urls[row.source_url].text},${row.source_url},${row.response_code},${row.redirect_url}\n` ;
+          csv += `${urls[row.source_url].text.replaceAll(","," ")},${row.source_url},${row.response_code},${row.redirect_url}\n` ;
         });
 
         var hiddenElement = document.createElement("a");
