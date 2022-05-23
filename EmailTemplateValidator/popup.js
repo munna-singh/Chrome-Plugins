@@ -12,11 +12,11 @@ figmaPullContent.addEventListener("click", async () => {
   var figmaNode = document.getElementById("txtFigmaNodeId");
   var token = document.getElementById("txtFigmaPAT");
   // url: `https://api.figma.com/v1/files/NOLD0VqlLthvIPKRoU3M3A/nodes?ids=511:5617`,
-  var figmaPageId=figmaFile.value;
-  var figmaNodeId=figmaNode.value;
-  var figmaUrl=`https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
+  var figmaPageId = figmaFile.value;
+  var figmaNodeId = figmaNode.value;
+  var figmaUrl = `https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
   alert(`Figma Api Requested -> ${figmaUrl}`);
-  
+
   $.ajax({
     type: "GET",
     url: figmaUrl,
@@ -30,79 +30,83 @@ figmaPullContent.addEventListener("click", async () => {
       // filteredResult.forEach(element => {
       //   GetChild(element, childs);
       // });
-      
+
       // GetChild(filteredResult[0], childs);
       var nodestyles = res.nodes[figmaNodeId].styles;
       // var filteredResult = data.nodes[document_node_id].document.children.filter(function (obj) {
       //     return obj.type == "FRAME";
       // });
       var filteredResult = res.nodes[figmaNodeId].document.children;
-      var childs = []
+      var childs = [];
 
       // Get all child items and recurse through all nodes
       GetChild(filteredResult, childs);
 
       var secFilter = [];
-      var prevVal = '';
-      var justTextContent=[];
+      var prevVal = "";
+      var justTextContent = [];
 
-      childs.forEach(element => {
-
+      childs.forEach((element) => {
         //Find text container type, h1/h2,etc
 
-        if (element.type === "VECTOR"){
+        if (element.type === "VECTOR") {
           var idindex = element.id.lastIndexOf(":");
-          var tid = element.id.substring(0,idindex);
-          if(prevVal !== tid){
+          var tid = element.id.substring(0, idindex);
+          if (prevVal !== tid) {
             element.ctrlType - "IMG";
             secFilter.push(element);
             prevVal = tid;
           }
-        } else if (element.type === "RECTANGLE"){
-          if (element.fills && element.fills.length > 0){
-            element.fills.forEach(fill => {
-              if(fill.type === "IMAGE"){
+        } else if (element.type === "RECTANGLE") {
+          if (element.fills && element.fills.length > 0) {
+            element.fills.forEach((fill) => {
+              if (fill.type === "IMAGE") {
                 element.type = "IMAGE";
                 element.ctrlType - "IMG";
               }
             });
           }
           secFilter.push(element);
-
-        } else if (element.type === "TEXT"){
-
+        } else if (element.type === "TEXT") {
           var ctrlType = "";
-          if(element.styles){
-              ctrlType = nodestyles[element.styles.text?element.styles.text:element.styles.fill].name;
+          if (element.styles) {
+            ctrlType =
+              nodestyles[
+                element.styles.text ? element.styles.text : element.styles.fill
+              ].name;
           }
 
-          if (element.name='button'){
-              ctrlType = "a";
+          if ((element.name = "button")) {
+            ctrlType = "a";
           }
 
           element.ctrlType = ctrlType;
 
-          var content  = element.characters.replace('\n', '')
-          justTextContent.push({'section_name':element.name, 'text': content, 'ctlType': ctrlType});
+          var content = element.characters.replace("\n", "");
+          justTextContent.push({
+            section_name: element.name,
+            text: content,
+            ctlType: ctrlType,
+          });
 
           secFilter.push(element);
-        }else {
+        } else {
           secFilter.push(element);
         }
       });
 
-      
-      justTextContent.forEach(item=> {
-          console.info(item);
-      })
-      localStorage.setItem('FigmaNodeChars', JSON.stringify(justTextContent));
-      alert(`Total content items saved in localstorage --> ${justTextContent.length}`);
-      var itemsInStorage  = localStorage.getItem('FigmaNodeChars');
+      justTextContent.forEach((item) => {
+        console.info(item);
+      });
+      localStorage.setItem("FigmaNodeChars", JSON.stringify(justTextContent));
+      alert(
+        `Total content items saved in localstorage --> ${justTextContent.length}`
+      );
+      var itemsInStorage = localStorage.getItem("FigmaNodeChars");
       console.info(itemsInStorage);
       // const formatter = new JSONFormatter(justTextContent);
       // // $("#pageJson").append(formatter.render());
       // document.body.appendChild(formatter.render());
-      
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
       alert(
@@ -114,20 +118,20 @@ figmaPullContent.addEventListener("click", async () => {
   });
 });
 
-
-function GetChild(nodes, lists){
-  nodes.forEach(child => {
-      if(child.children && child.children.length > 0){
-          GetChild(child.children, lists);
-      } else {
-          lists.push(child);
-      }
+function GetChild(nodes, lists) {
+  nodes.forEach((child) => {
+    if (child.children && child.children.length > 0) {
+      GetChild(child.children, lists);
+    } else {
+      lists.push(child);
+    }
   });
 }
 
 linkValidator.addEventListener("click", async () => {
   // Get the in progress text
-  document.getElementById("validationinprogress").innerHTML ="Validation is in progress ...";
+  document.getElementById("validationinprogress").innerHTML =
+    "Validation is in progress ...";
   linkValidator.disabled = true;
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.scripting.executeScript({
@@ -156,8 +160,8 @@ function ValidateHrefLinks() {
   });
 
   var formatted_payload = {
-    urls:req_params
-  }
+    urls: req_params,
+  };
   if (req_params.length > 0) {
     $.ajax({
       type: "POST",
@@ -166,7 +170,9 @@ function ValidateHrefLinks() {
       success: function (res) {
         var csv = "Link_Text,Original_Link, Resp_Code, Redirect_url\n";
         res.forEach(function (row) {
-          csv += `${urls[row.source_url].text.replaceAll(","," ")},${row.source_url},${row.response_code},${row.redirect_url}\n` ;
+          csv += `${urls[row.source_url].text.replaceAll(",", " ")},${
+            row.source_url
+          },${row.response_code},${row.redirect_url}\n`;
         });
 
         var hiddenElement = document.createElement("a");
@@ -180,8 +186,8 @@ function ValidateHrefLinks() {
           "Unable to fullfill the request right now. Please try after some time."
         );
       },
-      contentType : 'text/plain; charset=UTF-8',
-      async: false
+      contentType: "text/plain; charset=UTF-8",
+      async: false,
     });
   }
 }
@@ -189,7 +195,7 @@ function ValidateHrefLinks() {
 saveDOM.addEventListener("click", async () => {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   let fileName = document.getElementById("txteditedfilename").value;
-  if(fileName == ''){
+  if (fileName == "") {
     fileName = "modifiedPage";
   }
   chrome.scripting.executeScript({
@@ -249,18 +255,17 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     var attrs = ctrls[i].split(":")[1].replace("\n", "").trim().split(",");
     var nodes = document.querySelectorAll(ctrl);
     var valueEmpty = false;
-    if (!errorCtl.hasOwnProperty(ctrl)){
-      errorCtl[ctrl]=[];
+    if (!errorCtl.hasOwnProperty(ctrl)) {
+      errorCtl[ctrl] = [];
     }
-    allControls=[];
+    allControls = [];
     for (x = 0; x < nodes.length; x++) {
-
       for (y = 0; y < attrs.length; y++) {
         var source = nodes[x].getAttribute(attrs[y]);
         if (source === "#" || source === "" || source === undefined) {
           valueEmpty = true;
-          control={};
-          control[nodes[x].innerText]=[];
+          control = {};
+          control[nodes[x].innerText] = [];
           control[nodes[x].innerText].push(attrs[y]);
           allControls.push(control);
           break;
@@ -299,7 +304,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
       head.appendChild(style);
     }
   } else {
-    alert("Validation is successful.")
+    alert("Validation is successful.");
   }
 }
 
@@ -343,10 +348,12 @@ function EnableVEditor() {
       
       /* The Close Button */
       .close {
-        color: #aaaaaa;
+        color: #000 !important;
         float: right;
         font-size: 28px;
         font-weight: bold;
+        right: 100px;
+        position: absolute;
       }
       
       .close:hover,
@@ -370,20 +377,20 @@ function EnableVEditor() {
   divTag.setAttribute("class", "modal");
   divTag.innerHTML = `
       <!-- Modal content -->
-      <div class="modal-content">
+      <div class="modal-content"  style="min-height: 250px;vertical-align: middle;display: flex;align-items: center;justify-content: center;">
         <span class="close">&times;</span>
-        <table>
+        <table style>
             <tr>
-                <td>Image Src</td>
-                <td><textarea id="imgSrc"></textarea></td>
+                <td>Link/Src</td>
+                <td><textarea id="imgSrc" style="width: 500px;"></textarea></td>
             </tr>
-            <tr>
+            <tr id ="trImgAlt">
                 <td>Image Alt</td>
-                <td><input type="text" id="imgAlt"></input></td>
+                <td><input type="text" id="imgAlt"  style="width: 500px;"></input></td>
             </tr>
             <tr>
                 <td></td>
-                <td><input type="button" id ="btnUpdateImgSrc" value="Update"></input></td>
+                <td><input type="button" id ="btnUpdateImgSrc" value="Update" style="width: 500px;"></input></td>
             </tr>
         </table>
         
@@ -410,6 +417,7 @@ function EnableVEditor() {
       // When the user clicks the button, open the modal
 
       modal.style.display = "block";
+      document.getElementById("trImgAlt").removeAttribute('style');
       document.getElementById("imgSrc").value = img.getAttribute("src");
       document.getElementById("imgAlt").value = img.getAttribute("Alt");
 
@@ -434,36 +442,40 @@ function EnableVEditor() {
   var anchors = document.querySelectorAll("a");
   anchors.forEach((anchor) => {
     anchor.addEventListener("click", (event) => {
+      debugger;
       event.preventDefault();
-      // Get the modal
-      var modal = document.getElementById("my-gale-popup-modal");
+      if (window.confirm("Do you want to update link URL?")) {
+        // Get the modal
+        var modal = document.getElementById("my-gale-popup-modal");
 
-      // Get the button that opens the modal
-      var btnUpdate = document.getElementById("btnUpdateImgSrc");
+        // Get the button that opens the modal
+        var btnUpdate = document.getElementById("btnUpdateImgSrc");
 
-      // Get the <span> element that closes the modal
-      var span = document.getElementsByClassName("close")[0];
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
 
-      // When the user clicks the button, open the modal
+        // When the user clicks the button, open the modal
 
-      modal.style.display = "block";
-      document.getElementById("imgSrc").value = anchor.getAttribute("href");
+        modal.style.display = "block";
+        document.getElementById("trImgAlt").style.display = "none";
+        document.getElementById("imgSrc").value = anchor.getAttribute("href");
 
-      //Update source code
-      btnUpdate.onclick = function () {
-        anchor.href = document.getElementById("imgSrc").value;
-      };
-      // When the user clicks on <span> (x), close the modal
-      span.onclick = function () {
-        modal.style.display = "none";
-      };
-
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function (event) {
-        if (event.target == modal) {
+        //Update source code
+        btnUpdate.onclick = function () {
+          anchor.href = document.getElementById("imgSrc").value;
+        };
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
           modal.style.display = "none";
-        }
-      };
+        };
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        };
+      }
     });
   });
 }
@@ -507,9 +519,9 @@ function GetDOMStructureFromCurrentTab(ctrls) {
     var ctlvalue = nodes[i].outerText.replace(/"/g, '""');
     ctlvalue = '"' + ctlvalue + '"';
 
-    ctlvalue = ctlvalue.replace(/\u00a0/g, " ")
+    ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
 
-    ctlvalue = ctlvalue.replace(/\u200C/g, '')
+    ctlvalue = ctlvalue.replace(/\u200C/g, "");
 
     var ctrl = [
       nodes[i].nodeName,
@@ -533,7 +545,12 @@ function GetDOMStructureFromCurrentTab(ctrls) {
   hiddenElement.click();
 }
 
-function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCtrlValue) {
+function ValidateNode(
+  sourceFileData,
+  ctrls,
+  ignoreNestedCtrl,
+  validateOptionsCtrlValue
+) {
   if (!sourceFileData) {
     return;
   }
@@ -544,42 +561,42 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
   for (y = 0; y < errorCtrls.length; y++) {
     errorCtrls[y].classList.remove("gale-validation-error-box");
   }
-  
+
   console.log(`Validation by - ${validateOptionsCtrlValue}`);
-  if (validateOptionsCtrlValue=='id'){
-    var errorCtrls=[];
+  if (validateOptionsCtrlValue == "id") {
+    var errorCtrls = [];
     let allRows = sourceFileData.split(/\r?\n|\r/);
-  
-  //Filter data
-  // console.log(CSV_COLUMNS);
+
+    //Filter data
+    // console.log(CSV_COLUMNS);
     let filteredSourceRow = [];
     for (x = 1; x < allRows.length; x++) {
-      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       // console.log(splited);
-      if (splited[1]){
+      if (splited[1]) {
         filteredSourceRow.push(splited);
       }
     }
-  
+
     for (i = 0; i < filteredSourceRow.length; i++) {
       // console.log(filteredSourceRow[i])
-      var ctrlId_Csv= filteredSourceRow[i][1];
-      var ctrlText_Csv= filteredSourceRow[i][2].replaceAll('"', '');
-      var controlDoc=document.getElementById(ctrlId_Csv);
-      if (!controlDoc){
-        continue
+      var ctrlId_Csv = filteredSourceRow[i][1];
+      var ctrlText_Csv = filteredSourceRow[i][2].replaceAll('"', "");
+      var controlDoc = document.getElementById(ctrlId_Csv);
+      if (!controlDoc) {
+        continue;
       }
 
       ctrlName = controlDoc.tagName;
       ctrlId = controlDoc.getAttribute("Id");
-      
+
       ctlvalue = controlDoc.outerText;
-      ctlvalue = ctlvalue.replaceAll('"', '');
+      ctlvalue = ctlvalue.replaceAll('"', "");
       ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
-      ctlvalue = ctlvalue.replace(/\u200C/g, '');
+      ctlvalue = ctlvalue.replace(/\u200C/g, "");
       ctlvalue = ctlvalue.trim();
 
-      var source= "";
+      var source = "";
       if (ctrlName === "A") {
         source = controlDoc.getAttribute("href");
       } else if (ctrlName === "IMG") {
@@ -590,42 +607,43 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
       }
 
       let altText = controlDoc.getAttribute("alt");
-      if (
-        altText === undefined ||
-        altText === null
-      ) {
+      if (altText === undefined || altText === null) {
         altText = "";
       }
 
-      combinedData = ctrlName + "," + ctrlId + "," + ctlvalue + "," + source + "," + altText;
+      combinedData =
+        ctrlName + "," + ctrlId + "," + ctlvalue + "," + source + "," + altText;
 
-      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', '');
+      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', "");
       var combinedCsvRow = filteredSourceRow[i].join(",");
 
       // console.log(ctrlText_Csv);
-      if (combinedData!==combinedCsvRow){
-        console.log(`Mismatch content:> Row No - ${i+1}---> \n ${combinedCsvRow}`);
+      if (combinedData !== combinedCsvRow) {
+        console.log(
+          `Mismatch content:> Row No - ${i + 1}---> \n ${combinedCsvRow}`
+        );
         controlDoc.classList.add("gale-validation-error-box");
         errorCtrls.push(controlDoc);
       }
     }
-  }
-  else{
+  } else {
     let allRows = sourceFileData.split(/\r?\n|\r/);
     //Filter data
     let filteredSourceRow = [];
     for (x = 1; x < allRows.length; x++) {
       let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       // console.log(splited);
-      if (splited.length==5 &&
-        ctrls.find((element) => element.toUpperCase() == splited[0].toUpperCase())
+      if (
+        splited.length == 5 &&
+        ctrls.find(
+          (element) => element.toUpperCase() == splited[0].toUpperCase()
+        )
       ) {
         // console.log(splited);
         filteredSourceRow.push(splited);
       }
-
     }
-  
+
     var nodes = document.querySelectorAll(ctrls.join(","));
     var filteredNode = [];
     for (i = 0; i < nodes.length; i++) {
@@ -653,7 +671,7 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
     for (i = 0; i < filteredSourceRow.length; i++) {
       var nodeName = filteredNode[i].nodeName;
       var source = null;
-  
+
       if (nodeName === "A") {
         source = nodes[i].getAttribute("href");
       } else if (nodeName === "IMG") {
@@ -663,24 +681,20 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
         source = "";
       }
       let ctlId = filteredNode[i].getAttribute("Id");
-      if (
-        ctlId === undefined ||
-        ctlId === null
-      ) {
+      if (ctlId === undefined || ctlId === null) {
         ctlId = "";
       }
-      
+
       let ctrlText = filteredNode[i].innerText;
       if (
         filteredNode[i].innerText === undefined ||
         filteredNode[i].innerText === null
       ) {
         ctrlText = "";
-      }
-      else{
-        ctrlText = ctrlText.replaceAll('"', '');
+      } else {
+        ctrlText = ctrlText.replaceAll('"', "");
         ctrlText = ctrlText.replace(/\u00a0/g, " ");
-        ctrlText = ctrlText.replace(/\u200C/g, '');
+        ctrlText = ctrlText.replace(/\u200C/g, "");
         ctrlText = ctrlText.trim();
       }
 
@@ -691,24 +705,22 @@ function ValidateNode(sourceFileData, ctrls, ignoreNestedCtrl, validateOptionsCt
       ) {
         altText = "";
       }
-      
+
       let compareString =
-      nodeName + "," + ctlId + "," + ctrlText + "," + source + "," + altText;
+        nodeName + "," + ctlId + "," + ctrlText + "," + source + "," + altText;
 
       // Replace if any double quotes present on value text
-      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', '');
+      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', "");
       var combinedCsvRow = filteredSourceRow[i].join(",");
-  
+
       if (combinedCsvRow !== compareString) {
-        console.log(`Mismatch content:> Row No - ${i+1}---> \n`)
+        console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
         console.log(combinedCsvRow);
         filteredNode[i].classList.add("gale-validation-error-box");
         errorCtrls.push(filteredNode[i]);
       }
-
     }
   }
-  
 
   if (errorCtrls.length === 0) {
     alert("Validation successful. No discrepancy detected!!!");
@@ -766,7 +778,12 @@ validateTag.addEventListener("click", async () => {
         chrome.scripting.executeScript({
           target: { tabId: tab.id },
           func: ValidateNode,
-          args: [e.target.result, seletedCtrls, ignoreNestedCtrl, validateOptionsCtrl.value],
+          args: [
+            e.target.result,
+            seletedCtrls,
+            ignoreNestedCtrl,
+            validateOptionsCtrl.value,
+          ],
         });
       });
       reader.readAsText(sourceFile, "UTF-8");
