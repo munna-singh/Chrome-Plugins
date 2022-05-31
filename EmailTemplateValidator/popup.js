@@ -280,7 +280,8 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     }
     allControls = [];
     for (x = 0; x < nodes.length; x++) {
-      let attrValForCtrl = "<span class='gale-tooltip-box'> ";
+      let attrValForCtrl = "<span class='gale-tooltip-box'> <b>" + ctrl.toUpperCase() + " :: </b>";
+      let atleastOneAttributeToDisplay = false;
       for (y = 0; y < attrs.length; y++) {
         let ignoreForScreen = false;
         let ctrlTypeName = attrs[y];
@@ -291,6 +292,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
         var source = nodes[x].getAttribute(ctrlTypeName);
         if (!ignoreForScreen){
           attrValForCtrl += `${ctrlTypeName} = '${source}'  `;
+          atleastOneAttributeToDisplay = true;
         }
         
         if (source === "#" || source === "" || source === undefined || source === null) {
@@ -303,8 +305,10 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
           }
         }
       }
-      attrValForCtrl += "</span>"
-      $(attrValForCtrl).insertBefore(nodes[x]);
+      if(atleastOneAttributeToDisplay){
+        attrValForCtrl += "</span>"
+        $(attrValForCtrl).insertBefore(nodes[x]);
+      }
 
       if (valueEmpty === true) {
         nodes[x].classList.add("gale-validation-error-box");
