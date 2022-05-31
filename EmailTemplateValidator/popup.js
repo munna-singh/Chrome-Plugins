@@ -165,13 +165,13 @@ function ValidateHrefLinks() {
   if (req_params.length > 0) {
     $.ajax({
       type: "POST",
-      url: "https://4wu4egnqg3retjm776umbrge440dcmar.lambda-url.us-west-2.on.aws/",
+      url: "https://rah4lzwrhowyyfvije4lxrcgty0hnvoj.lambda-url.us-west-2.on.aws/",
       data: JSON.stringify(formatted_payload),
       success: function (res) {
         var csv = "Link_Text,Original_Link, Resp_Code, Redirect_url\n";
         res.forEach(function (row) {
-          csv += `${urls[row.source_url].text.replaceAll(",", " ")},${
-            row.source_url
+          csv += `${urls[row.source_url].text.replaceAll(",", " ").trim()},${
+            row.source_url.trim()
           },${row.response_code},${row.redirect_url}\n`;
         });
 
@@ -321,7 +321,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
 
   console.log(errorCtl);
   if (ctrlWithIssue.length > 0) {
-    alert("Has issue with the control. Please check console log for details.");
+    alert("Attribute validation failed. Please check screen or console log for details.");
     // create a style element
     const style = document.createElement("style");
 
@@ -338,7 +338,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
         .gale-tooltip-box {
           display: block;
           color: blanchedalmond;
-          background-color: #610c04;
+          background-color: darkcyan;
           font-size: 15px;
           padding-left: 5px;
           padding-right: 5px;
