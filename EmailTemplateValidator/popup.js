@@ -5,128 +5,128 @@ var htmlAttributeValidator = document.getElementById("btnValidateAttributes");
 var htmlAttributeText = document.getElementById("htmlAttributes");
 var saveDOM = document.getElementById("saveDOM");
 var linkValidator = document.getElementById("btnValidateLink");
-var figmaPullContent = document.getElementById("btnPullContent");
+// var figmaPullContent = document.getElementById("btnPullContent");
 
-figmaPullContent.addEventListener("click", async () => {
-  var figmaFile = document.getElementById("txtFigmaFile");
-  var figmaNode = document.getElementById("txtFigmaNodeId");
-  var token = document.getElementById("txtFigmaPAT");
-  // url: `https://api.figma.com/v1/files/NOLD0VqlLthvIPKRoU3M3A/nodes?ids=511:5617`,
-  var figmaPageId = figmaFile.value;
-  var figmaNodeId = figmaNode.value;
-  var figmaUrl = `https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
-  alert(`Figma Api Requested -> ${figmaUrl}`);
+// figmaPullContent.addEventListener("click", async () => {
+//   var figmaFile = document.getElementById("txtFigmaFile");
+//   var figmaNode = document.getElementById("txtFigmaNodeId");
+//   var token = document.getElementById("txtFigmaPAT");
+//   // url: `https://api.figma.com/v1/files/NOLD0VqlLthvIPKRoU3M3A/nodes?ids=511:5617`,
+//   var figmaPageId = figmaFile.value;
+//   var figmaNodeId = figmaNode.value;
+//   var figmaUrl = `https://api.figma.com/v1/files/${figmaPageId}/nodes?ids=${figmaNodeId}`;
+//   alert(`Figma Api Requested -> ${figmaUrl}`);
 
-  $.ajax({
-    type: "GET",
-    url: figmaUrl,
-    headers: { "X-Figma-Token": "376646-3fac65f7-6fb8-4bd6-8bb2-956ed4cc1e77" },
-    success: function (res) {
-      var nodestyles = res.nodes[figmaNodeId].styles;
-      // var filteredResult = res.nodes[figmaNodeId].document.children.filter(function (obj) {
-      //   return obj.type == "FRAME";
-      // });
-      // var childs = []
-      // filteredResult.forEach(element => {
-      //   GetChild(element, childs);
-      // });
+//   $.ajax({
+//     type: "GET",
+//     url: figmaUrl,
+//     headers: { "X-Figma-Token": "376646-3fac65f7-6fb8-4bd6-8bb2-956ed4cc1e77" },
+//     success: function (res) {
+//       var nodestyles = res.nodes[figmaNodeId].styles;
+//       // var filteredResult = res.nodes[figmaNodeId].document.children.filter(function (obj) {
+//       //   return obj.type == "FRAME";
+//       // });
+//       // var childs = []
+//       // filteredResult.forEach(element => {
+//       //   GetChild(element, childs);
+//       // });
 
-      // GetChild(filteredResult[0], childs);
-      var nodestyles = res.nodes[figmaNodeId].styles;
-      // var filteredResult = data.nodes[document_node_id].document.children.filter(function (obj) {
-      //     return obj.type == "FRAME";
-      // });
-      var filteredResult = res.nodes[figmaNodeId].document.children;
-      var childs = [];
+//       // GetChild(filteredResult[0], childs);
+//       var nodestyles = res.nodes[figmaNodeId].styles;
+//       // var filteredResult = data.nodes[document_node_id].document.children.filter(function (obj) {
+//       //     return obj.type == "FRAME";
+//       // });
+//       var filteredResult = res.nodes[figmaNodeId].document.children;
+//       var childs = [];
 
-      // Get all child items and recurse through all nodes
-      GetChild(filteredResult, childs);
+//       // Get all child items and recurse through all nodes
+//       GetChild(filteredResult, childs);
 
-      var secFilter = [];
-      var prevVal = "";
-      var justTextContent = [];
+//       var secFilter = [];
+//       var prevVal = "";
+//       var justTextContent = [];
 
-      childs.forEach((element) => {
-        //Find text container type, h1/h2,etc
+//       childs.forEach((element) => {
+//         //Find text container type, h1/h2,etc
 
-        if (element.type === "VECTOR") {
-          var idindex = element.id.lastIndexOf(":");
-          var tid = element.id.substring(0, idindex);
-          if (prevVal !== tid) {
-            element.ctrlType - "IMG";
-            secFilter.push(element);
-            prevVal = tid;
-          }
-        } else if (element.type === "RECTANGLE") {
-          if (element.fills && element.fills.length > 0) {
-            element.fills.forEach((fill) => {
-              if (fill.type === "IMAGE") {
-                element.type = "IMAGE";
-                element.ctrlType - "IMG";
-              }
-            });
-          }
-          secFilter.push(element);
-        } else if (element.type === "TEXT") {
-          var ctrlType = "";
-          if (element.styles) {
-            ctrlType =
-              nodestyles[
-                element.styles.text ? element.styles.text : element.styles.fill
-              ].name;
-          }
+//         if (element.type === "VECTOR") {
+//           var idindex = element.id.lastIndexOf(":");
+//           var tid = element.id.substring(0, idindex);
+//           if (prevVal !== tid) {
+//             element.ctrlType - "IMG";
+//             secFilter.push(element);
+//             prevVal = tid;
+//           }
+//         } else if (element.type === "RECTANGLE") {
+//           if (element.fills && element.fills.length > 0) {
+//             element.fills.forEach((fill) => {
+//               if (fill.type === "IMAGE") {
+//                 element.type = "IMAGE";
+//                 element.ctrlType - "IMG";
+//               }
+//             });
+//           }
+//           secFilter.push(element);
+//         } else if (element.type === "TEXT") {
+//           var ctrlType = "";
+//           if (element.styles) {
+//             ctrlType =
+//               nodestyles[
+//                 element.styles.text ? element.styles.text : element.styles.fill
+//               ].name;
+//           }
 
-          if ((element.name = "button")) {
-            ctrlType = "a";
-          }
+//           if ((element.name = "button")) {
+//             ctrlType = "a";
+//           }
 
-          element.ctrlType = ctrlType;
+//           element.ctrlType = ctrlType;
 
-          var content = element.characters.replace("\n", "");
-          justTextContent.push({
-            section_name: element.name,
-            text: content,
-            ctlType: ctrlType,
-          });
+//           var content = element.characters.replace("\n", "");
+//           justTextContent.push({
+//             section_name: element.name,
+//             text: content,
+//             ctlType: ctrlType,
+//           });
 
-          secFilter.push(element);
-        } else {
-          secFilter.push(element);
-        }
-      });
+//           secFilter.push(element);
+//         } else {
+//           secFilter.push(element);
+//         }
+//       });
 
-      justTextContent.forEach((item) => {
-        console.info(item);
-      });
-      localStorage.setItem("FigmaNodeChars", JSON.stringify(justTextContent));
-      alert(
-        `Total content items saved in localstorage --> ${justTextContent.length}`
-      );
-      var itemsInStorage = localStorage.getItem("FigmaNodeChars");
-      console.info(itemsInStorage);
-      // const formatter = new JSONFormatter(justTextContent);
-      // // $("#pageJson").append(formatter.render());
-      // document.body.appendChild(formatter.render());
-    },
-    error: function (XMLHttpRequest, textStatus, errorThrown) {
-      alert(
-        "Unable to fullfill the request right now. Please try after some time."
-      );
-    },
-    dataType: "json",
-    async: false,
-  });
-});
+//       justTextContent.forEach((item) => {
+//         console.info(item);
+//       });
+//       localStorage.setItem("FigmaNodeChars", JSON.stringify(justTextContent));
+//       alert(
+//         `Total content items saved in localstorage --> ${justTextContent.length}`
+//       );
+//       var itemsInStorage = localStorage.getItem("FigmaNodeChars");
+//       console.info(itemsInStorage);
+//       // const formatter = new JSONFormatter(justTextContent);
+//       // // $("#pageJson").append(formatter.render());
+//       // document.body.appendChild(formatter.render());
+//     },
+//     error: function (XMLHttpRequest, textStatus, errorThrown) {
+//       alert(
+//         "Unable to fullfill the request right now. Please try after some time."
+//       );
+//     },
+//     dataType: "json",
+//     async: false,
+//   });
+// });
 
-function GetChild(nodes, lists) {
-  nodes.forEach((child) => {
-    if (child.children && child.children.length > 0) {
-      GetChild(child.children, lists);
-    } else {
-      lists.push(child);
-    }
-  });
-}
+// function GetChild(nodes, lists) {
+//   nodes.forEach((child) => {
+//     if (child.children && child.children.length > 0) {
+//       GetChild(child.children, lists);
+//     } else {
+//       lists.push(child);
+//     }
+//   });
+// }
 
 linkValidator.addEventListener("click", async () => {
   // Get the in progress text
@@ -223,6 +223,12 @@ function saveDOMAndDownload(file_name) {
     errormsg.remove();
   }
 
+  //Remove tooltip span
+  const boxes = document.querySelectorAll('.gale-tooltip-box');
+  boxes.forEach(box => {
+    box.remove();
+  });
+
   var dom =
     new XMLSerializer().serializeToString(document.doctype) +
     "\r" +
@@ -236,18 +242,32 @@ function saveDOMAndDownload(file_name) {
 }
 
 htmlAttributeValidator.addEventListener("click", async () => {
+  debugger;
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: ValidateHTMLAttributes,
-    args: [htmlAttributeText.innerHTML],
+    args: [htmlAttributeText.value],
   });
 });
 
 function ValidateHTMLAttributes(ctrlsWithAttributes) {
+  
+  //Clear previous error message
+  const errormsg = document.getElementById("my-gale-error-message-css");
+  if (errormsg !== null) {
+    errormsg.remove();
+  }
+
+  //Remove tooltip span
+  const boxes = document.querySelectorAll('.gale-tooltip-box');
+  boxes.forEach(box => {
+    box.remove();
+  });
+
   //img:src, alt
   //a: href
-  var ctrls = ctrlsWithAttributes.split("\r");
+  var ctrls = ctrlsWithAttributes.replace("\n","\r").replace("\r\r","\r").split("\r");
   var ctrlWithIssue = [];
   var errorCtl = {};
   for (i = 0; i < ctrls.length; i++) {
@@ -260,17 +280,32 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     }
     allControls = [];
     for (x = 0; x < nodes.length; x++) {
+      let attrValForCtrl = "<span class='gale-tooltip-box'> ";
       for (y = 0; y < attrs.length; y++) {
-        var source = nodes[x].getAttribute(attrs[y]);
-        if (source === "#" || source === "" || source === undefined) {
-          valueEmpty = true;
-          control = {};
-          control[nodes[x].innerText] = [];
-          control[nodes[x].innerText].push(attrs[y]);
-          allControls.push(control);
-          break;
+        let ignoreForScreen = false;
+        let ctrlTypeName = attrs[y];
+        if (attrs[y].startsWith("-")){
+          ignoreForScreen = true;
+          ctrlTypeName = attrs[y].substring(1, attrs[y].length);
+        }
+        var source = nodes[x].getAttribute(ctrlTypeName);
+        if (!ignoreForScreen){
+          attrValForCtrl += `${ctrlTypeName} = '${source}'  `;
+        }
+        
+        if (source === "#" || source === "" || source === undefined || source === null) {
+          if (valueEmpty === false){
+            valueEmpty = true;
+            control = {};
+            control[nodes[x].innerText] = [];
+            control[nodes[x].innerText].push(ctrlTypeName);
+            allControls.push(control);
+          }
         }
       }
+      attrValForCtrl += "</span>"
+      $(attrValForCtrl).insertBefore(nodes[x]);
+
       if (valueEmpty === true) {
         nodes[x].classList.add("gale-validation-error-box");
         ctrlWithIssue.push(nodes[x]);
@@ -290,11 +325,23 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
     style.appendChild(
       document.createTextNode(`
         .gale-validation-error-box {
-          border-radius: 2px;
-          border-color: red;
-          border-width: 5px;
-          border-style: solid;
-        }`)
+          border-radius: 2px !important;
+          border-color: red !important;
+          border-width: 5px !important;
+          border-style: solid !important;
+        }
+
+        .gale-tooltip-box {
+          display: block;
+          color: black;
+          background-color: antiquewhite;
+          font-size: 15px;
+          padding-left: 5px;
+          padding-right: 5px;
+          margin-bottom: -1px;
+          padding-bottom: 3px;
+        }
+      `)
     );
 
     // add it to the head
@@ -361,7 +408,7 @@ function EnableVEditor() {
         color: #000;
         text-decoration: none;
         cursor: pointer;
-      }  
+      } 
     `)
   );
 
@@ -417,7 +464,7 @@ function EnableVEditor() {
       // When the user clicks the button, open the modal
 
       modal.style.display = "block";
-      document.getElementById("trImgAlt").removeAttribute('style');
+      document.getElementById("trImgAlt").removeAttribute("style");
       document.getElementById("imgSrc").value = img.getAttribute("src");
       document.getElementById("imgAlt").value = img.getAttribute("Alt");
 
@@ -736,10 +783,10 @@ function ValidateNode(
     style.appendChild(
       document.createTextNode(`
   .gale-validation-error-box { 
-    border-radius: 2px;
-    border-color: red;
-    border-width: 5px;
-    border-style: solid;
+    border-radius: 2px !important;
+    border-color: red !important;
+    border-width: 5px !important;
+    border-style: solid !important;
   }`)
     );
 
