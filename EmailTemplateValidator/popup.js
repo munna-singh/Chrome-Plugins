@@ -337,13 +337,14 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
 
         .gale-tooltip-box {
           display: block;
-          color: black;
-          background-color: antiquewhite;
+          color: blanchedalmond;
+          background-color: #610c04;
           font-size: 15px;
           padding-left: 5px;
           padding-right: 5px;
           margin-bottom: -1px;
           padding-bottom: 3px;
+          line-height: 1.2;
         }
       `)
     );
