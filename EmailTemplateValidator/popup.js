@@ -242,7 +242,6 @@ function saveDOMAndDownload(file_name) {
 }
 
 htmlAttributeValidator.addEventListener("click", async () => {
-  debugger;
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
@@ -395,7 +394,8 @@ function EnableVEditor() {
         margin: auto;
         padding: 20px;
         border: 1px solid #888;
-        width: 80%;
+        width: 60%;
+        flex-direction: column;
       }
       
       /* The Close Button */
@@ -406,6 +406,9 @@ function EnableVEditor() {
         font-weight: bold;
         right: 100px;
         position: absolute;
+        margin-right: 261px; 
+        top: 102px; 
+        color: red !important;
       }
       
       .close:hover,
@@ -431,22 +434,12 @@ function EnableVEditor() {
       <!-- Modal content -->
       <div class="modal-content"  style="min-height: 250px;vertical-align: middle;display: flex;align-items: center;justify-content: center;">
         <span class="close">&times;</span>
-        <table style>
-            <tr>
-                <td>Link/Src</td>
-                <td><textarea id="imgSrc" style="width: 500px;"></textarea></td>
-            </tr>
-            <tr id ="trImgAlt">
-                <td>Image Alt</td>
-                <td><input type="text" id="imgAlt"  style="width: 500px;"></input></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="button" id ="btnUpdateImgSrc" value="Update" style="width: 500px;"></input></td>
-            </tr>
-        </table>
-        
-    </div>
+        <div id="dynamic-text-div"></div>
+        <div>
+          <input type="button" id ="btnUpdateImgSrc" value="Update" style="width: 200px; height:50px; background-color: orange;"></input>
+        </div>
+                
+      </div>
     `;
   // add it to the head
   if (document.getElementById("my-gale-popup-modal") === null) {
@@ -459,6 +452,7 @@ function EnableVEditor() {
     img.addEventListener("click", (event) => {
       // Get the modal
       var modal = document.getElementById("my-gale-popup-modal");
+      var dynamicDiv = document.getElementById("dynamic-text-div");
 
       // Get the button that opens the modal
       var btnUpdate = document.getElementById("btnUpdateImgSrc");
@@ -467,16 +461,20 @@ function EnableVEditor() {
       var span = document.getElementsByClassName("close")[0];
 
       // When the user clicks the button, open the modal
-
+      let dynamicContent = "<table><tr><td></td><td><h1 style='color: maroon;'>Image</h1></td></tr>";
+      img.getAttributeNames().forEach(function(val){
+        dynamicContent+= `<tr><td> ${val} </td><td> <textarea id="GALE-${val}"  style="width: 500px;">${img.getAttribute(val)}</textarea></td></tr>`;
+      });
+      dynamicContent += "</table>";
+      dynamicDiv.innerHTML = dynamicContent;
       modal.style.display = "block";
-      document.getElementById("trImgAlt").removeAttribute("style");
-      document.getElementById("imgSrc").value = img.getAttribute("src");
-      document.getElementById("imgAlt").value = img.getAttribute("Alt");
-
+     
       //Update source code
       btnUpdate.onclick = function () {
-        img.src = document.getElementById("imgSrc").value;
-        img.setAttribute("Alt", document.getElementById("imgAlt").value);
+        img.getAttributeNames().forEach(function(val){
+          img.setAttribute(val, document.getElementById("GALE-"+val).value);
+        });
+        modal.style.display = "none";
       };
       // When the user clicks on <span> (x), close the modal
       span.onclick = function () {
@@ -494,11 +492,22 @@ function EnableVEditor() {
   var anchors = document.querySelectorAll("a");
   anchors.forEach((anchor) => {
     anchor.addEventListener("click", (event) => {
-      debugger;
       event.preventDefault();
-      if (window.confirm("Do you want to update link URL?")) {
+      const childCtrl = anchor.children.length > 0? anchor.children[0].nodeName : "Unknown";
+      let showAnchor = true
+      if (childCtrl === "IMG"){
+        if (window.confirm("Do you want to update link URL?")) {
+          showAnchor = true;
+        } else {
+          showAnchor = false;
+        }
+      } else {
+        showAnchor = true;
+      }
+      if (showAnchor) {
         // Get the modal
         var modal = document.getElementById("my-gale-popup-modal");
+        var dynamicDiv = document.getElementById("dynamic-text-div");
 
         // Get the button that opens the modal
         var btnUpdate = document.getElementById("btnUpdateImgSrc");
@@ -508,13 +517,21 @@ function EnableVEditor() {
 
         // When the user clicks the button, open the modal
 
+        let dynamicContent = "<table><tr><td></td><td><h1 style='color: maroon;'>Anchor</h1></td></tr>";
+        anchor.getAttributeNames().forEach(function(val){
+          dynamicContent+= `<tr><td> ${val} </td><td> <textarea id="GALE-${val}"  style="width: 500px;">${anchor.getAttribute(val)}</textarea></td></tr>`;
+        });
+        dynamicContent += "</table>";
+        dynamicDiv.innerHTML = dynamicContent;
+
         modal.style.display = "block";
-        document.getElementById("trImgAlt").style.display = "none";
-        document.getElementById("imgSrc").value = anchor.getAttribute("href");
 
         //Update source code
         btnUpdate.onclick = function () {
-          anchor.href = document.getElementById("imgSrc").value;
+          anchor.getAttributeNames().forEach(function(val){
+            anchor.setAttribute(val, document.getElementById("GALE-" + val).value);
+          });
+          modal.style.display = "none";
         };
         // When the user clicks on <span> (x), close the modal
         span.onclick = function () {
