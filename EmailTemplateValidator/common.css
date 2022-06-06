@@ -29,35 +29,37 @@ error-message {
   color: brown;
 }
 fieldset {
-  /*margin: 20px;*/
-  padding: 10px 10px 10px;
-  border: 1px 0px 1px 1px solid #666;
-  border-radius: 8px;
-  box-shadow: 0 0 100px lightsteelblue;
-  margin-bottom: 30px;
+  padding: 6px 20px;
+  border-radius: 0;
+  margin-bottom: 0px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #828282;
+  margin-top: -4px;
+  border-bottom: 0;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(219 234 252)), to(rgba(255,255,255,1)));
+  background: -o-linear-gradient(top, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
+  background: linear-gradient(180deg, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
+  -webkit-box-shadow: 0 0 10px 1px lightsteelblue;
+  box-shadow: 0 0 10px 1px lightsteelblue;
 }
 legend {
-  padding: 2px 4px;
   background: #fff;
   /* For better legibility against the box-shadow */
 }
 legend span {
-    font-size: 15px;
-    font-weight: bold;
-    color: darkslategrey;
-    border-style: solid;
-    border-width: 1px 1px 0px 1px;
-    box-shadow: 6px 0px 10px 0 #666;
-    background-color: transparent;
-    margin-left: -5px;
-    padding-left: 13px;
-    margin-right: -4px;
-    padding-right: 13px;
-    padding-top: 6px;
+  font-size: 15px;
+  font-weight: bold;
 }
 fieldset > legend {
   float: left;
-  margin-top: -31px;
+  /* margin-top: -31px; */
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background-color: transparent;
 }
 fieldset > legend + * {
   clear: both;
@@ -124,4 +126,149 @@ select {
 .black {
   filter: invert(93%) sepia(63%) saturate(6234%) hue-rotate(246deg)
     brightness(87%) contrast(156%);
+}
+/*Toggle CSS */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 28px;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 8px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #0074b6;
+}
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+.fileCtrl {
+    color: gray;
+    border-style: solid;
+    border-color: gray;
+    background-color: white;
+    padding: 10px;
+    width: 100%;
+}
+input[type=file]:file-selector-button  {
+    color: #0074b6  !important;
+    border-style: solid  !important;
+    border-color: #0074b6  !important;
+    background-color: white  !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+select {
+    color: #0074b6 ;
+    border-style: solid ;
+    border-color: #0074b6 ;
+    background-color: white ;
+    padding: 5px;
+}
+.InputButtonNoFill {
+    color: #0074b6  !important;
+    border-style: solid  !important;
+    border-color: #0074b6  !important;
+    background-color: white  !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+.black {
+  filter: invert(93%) sepia(63%) saturate(6234%) hue-rotate(246deg)
+    brightness(87%) contrast(156%);
+}
+.heading{
+  position: relative;
+  cursor: pointer;
+  padding: 10px 0;
+}
+.heading.active{
+  border-bottom: 1px solid;
+border-image: linear-gradient(to right, #ff000000, #1e1e1e, #d10e0e00)1;
+}
+.content{
+  opacity: 0;
+  transition: all 0.5s ease;
+  max-height: 0;
+  display: none;
+}
+.heading.active + .content  {
+  opacity: 1;
+max-height: 500px;
+  display: inline-block;
+  padding-top: 14px;
+}
+button.validate {
+  height: auto;
+  width: auto;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #0074b6;
+  color: #ffffff;
+  float: right;
+  margin-right: 4px;
+  cursor: pointer;
+}
+span.setting_link a {
+  display: block;
+  font-weight: 500;
+  text-decoration: none !important;
+  font-size: 13px;
+  margin: 0;
+  padding: 4px 0 0;
+  line-height: 01;
+  color: #0074b6;
+}
+fieldset.firstfield {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+fieldset.lastfield {
+  border-bottom: 1px solid #828282;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+legend.heading p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 12px;
 }

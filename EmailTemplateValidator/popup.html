@@ -4,7 +4,7 @@
   <script src="jquery.min.js"></script>
 </head>
 
-<body style='width: 800px'>
+<body style='width: 800px; margin:0 auto'>
   <table width="98%">
     <tr>
       <td colspan="2">
@@ -24,19 +24,29 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2">
-        <div style="margin-bottom: 20px;"><br /></div>
+      <td>
+        <div>
+          <button class="validate">Validate</button>
+        </div>
       </td>
     </tr>
     <tr style="vertical-align: top;">
       <td style="width: 46%;">
         <div>
           <fieldset>
-            <legend><span>Validate HTML attributes</span></legend>
-            <table>
-              <tr>
-                <td>Please enter HTML tags and respective attributes which needs to be validated</td>
-              </tr>
+            <legend class="heading">
+              <span>
+                Validate HTML attributes 
+                <p>Please enter HTML tags and respective attributes which needs to be validated</p>
+                <span class="setting_link">
+                <a href="#">Settings</a></span>
+              </span> 
+              <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+          </legend>
+            <table class="content">
               <tr>
                 <td>
                   <textarea id="htmlAttributes" name="htmlAttributes" rows="4"
@@ -61,16 +71,23 @@
           </fieldset>
         </div>
       </td>
-      <td rowspan="2">
+    </tr>
+    <tr>
+      <td>
         <div>
           <fieldset>
-            <legend><span>Validate HTML content</span></legend>
-            <table width="100%">
-              <tr>
-                <td>
-                  This section helps in validating content on the page based on provided source file in specified format. Format of file can be downloaded by clicking on "Example File" button.
-                </td>
-              </tr>
+            <legend class="heading"><span>Validate HTML content
+              <p> This section helps in validating content on the page based on provided source file in specified format. <br>Format of file can be downloaded by clicking on "Example File" button.</p>
+              <span class="setting_link">
+                <a href="#">Settings</a>
+              </span>
+            </span> 
+              <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+          </legend>
+            <table width="100%" class="content">
               <tr>
                 <td>
                   <table width="100%" style="text-align: right;">
@@ -162,16 +179,23 @@
       <td>
         <div>
           <fieldset>
-            <legend><span>Link Validator</span></legend>
-            <table>
-              <tr>
-                <td>To check the validity of links on the page, click "Validate Link" button.</td>
-              </tr>
+            <legend class="heading"><span>Link Validator
+              <p>To check the validity of links on the page, click "Validate Link" button.</p>
+              <span class="setting_link">
+                <a href="#">Settings</a>
+              </span>
+            </span> 
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider round"></span>
+              </label>
+            </legend>
+            <table class="content">
               <tr>
                 <td style="text-align: right;">
                   <input type="button" id="btnValidateLink" value="Validate Link"></input>
+                  <span id="validationinprogress" style="font-size:10px; color:blue"></span>
                 </td>
-                <span id="validationinprogress" style="font-size:10px; color:blue"></span>
               </tr>
             </table>
         </div>
@@ -182,13 +206,18 @@
       <td colspan="2">
         <div>
           <fieldset>
-            <legend><span>Visual Editor</span></legend>
-            <table width="100%">
-              <tr>
-                <td colspan="2">
-                  To enable spell check and on-screen editing of text, image & anchro tag, click on "Enable Visual Editor" button. After editing the page, enter the file name and click on "Save Page" to download the modified page on the local machine.
-                </td>
-              </tr>
+            <legend class="heading"><span>Visual Editor
+              <p>To enable spell check and on-screen editing of text, image & anchro tag, click on "Enable Visual Editor" button. <br>After editing the page, enter the file name and click on "Save Page" to download the modified page on the local machine.</p>
+            
+              <span class="setting_link">
+                <a href="#">Settings</a>
+              </span></span>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider round"></span>
+              </label>
+            </legend>
+            <table width="100%" class="content">
               <tr>
                 <td colspan="2">
                   <input type="button" id="enableVisualEditor" value="Enable Visual Editor"></input>
@@ -198,9 +227,9 @@
                 <td>&nbsp;</td>
               </tr>
               <tr>
-                <td>
+                <td width="100%">
                   <input type="text" id="txteditedfilename" placeholder="file name..."
-                    style="font-size: 15px;padding: 5px;width: 100%;"></input>
+                    style="font-size: 15px;padding: 5px;width: 100%; height: 40px;"></input>
                 </td>
                 <td style="text-align: right">
                   <input type="button" id="saveDOM" value="Save Page" disabled></input>
