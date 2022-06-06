@@ -863,7 +863,7 @@ validateTag.addEventListener("click", async () => {
     alert("Please select the source file.");
   }
 });
-// Accordian 
+// Accordian Code
 let headings = document.querySelectorAll(".heading");
 headings.forEach(function(heading){
     heading.addEventListener('click', function(){
