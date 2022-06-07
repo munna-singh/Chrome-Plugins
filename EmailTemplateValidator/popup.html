@@ -1,11 +1,15 @@
 <html>
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel='stylesheet' href='common.css' />
   <script src="jquery.min.js"></script>
 </head>
 
-<body style='width: 800px; margin:0 auto'>
-  <table width="98%">
+<body style='width: 400px; margin:0 auto; height: fit-content;'>
+  <div class="fit">
+  <table width="100%">
     <tr>
       <td colspan="2">
         <div>
@@ -36,10 +40,10 @@
           <fieldset>
             <legend class="heading">
               <span>
-                Validate HTML attributes 
+                Validate HTML attributes <span class="setting_link">
+                  <a href="#"><img src="images/settings_icon.svg" alt=""></a></span>
                 <p>Please enter HTML tags and respective attributes which needs to be validated</p>
-                <span class="setting_link">
-                <a href="#">Settings</a></span>
+                
               </span> 
               <label class="switch">
               <input type="checkbox" checked>
@@ -76,11 +80,9 @@
       <td>
         <div>
           <fieldset>
-            <legend class="heading"><span>Link Validator
+            <legend class="heading"><span>Link Validator <span class="setting_link">
+              <a href="#"><img src="images/settings_icon.svg" alt=""></a></span>
               <p>To check the validity of links on the page, click "Validate Link" button.</p>
-              <span class="setting_link">
-                <a href="#">Settings</a>
-              </span>
             </span> 
               <label class="switch">
                 <input type="checkbox" checked>
@@ -103,11 +105,9 @@
       <td>
         <div>
           <fieldset>
-            <legend class="heading"><span>Validate HTML content
-              <p> This section helps in validating content on the page based on provided source file in specified format. <br>Format of file can be downloaded by clicking on "Example File" button.</p>
-              <span class="setting_link">
-                <a href="#">Settings</a>
-              </span>
+            <legend class="heading"><span>Validate HTML content <span class="setting_link">
+              <a href="#"><img src="images/settings_icon.svg" alt=""></a></span>
+              <p> This section helps in validating content on the page based on provided source file in specified format. Format of file can be downloaded by clicking on "Example File" button.</p>
             </span> 
               <label class="switch">
               <input type="checkbox" checked>
@@ -206,12 +206,11 @@
       <td colspan="2">
         <div>
           <fieldset>
-            <legend class="heading"><span>Visual Editor
-              <p>To enable spell check and on-screen editing of text, image & anchro tag, click on "Enable Visual Editor" button. <br>After editing the page, enter the file name and click on "Save Page" to download the modified page on the local machine.</p>
+            <legend class="heading"><span>Visual Editor <span class="setting_link">
+              <a href="#"><img src="images/settings_icon.svg" alt=""></a></span>
+              <p>To enable spell check and on-screen editing of text, image & anchro tag, click on "Enable Visual Editor" button. After editing the page, enter the file name and click on "Save Page" to download the modified page on the local machine.</p>
             
-              <span class="setting_link">
-                <a href="#">Settings</a>
-              </span></span>
+              </span>
               <label class="switch">
                 <input type="checkbox" checked>
                 <span class="slider round"></span>
@@ -242,7 +241,7 @@
     </tr>
   </table>
 
-
+</div>
 
 
 
@@ -254,7 +253,6 @@
   <script src='../scripts/HTMLAttributeValidator.js'></script>
   <script src='../scripts/ExampleFileGenerator.js'></script>
   <script src='../scripts/NodeTextValidator.js'></script>
-  <link rel='stylesheet' href='common.css' />
 </body>
 
 </html>
