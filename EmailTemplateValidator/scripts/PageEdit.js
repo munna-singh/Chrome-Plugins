@@ -22,8 +22,15 @@ saveDOM.addEventListener("click", async () => {
 
 function EnableVEditor() {
   document.designMode = "on";
+
+  document.body.addEventListener('contextmenu', function(e) {
+      LAST_SELECTION = window.getSelection();
+      LAST_ELEMENT = e.target;
+  }, false);
+
   // add the CSS as a string using template literals
   const style = document.createElement("style");
+  style.setAttribute("id", "my-gale-popup-modal-css");
   style.appendChild(
     document.createTextNode(`
         /* The Modal (background) */
@@ -76,7 +83,6 @@ function EnableVEditor() {
   // add it to the head
   if (document.getElementById("my-gale-popup-modal-css") === null) {
     const head = document.getElementsByTagName("head")[0];
-    style.setAttribute("id", "my-gale-popup-modal-css");
     head.appendChild(style);
   }
 
@@ -210,6 +216,8 @@ function EnableVEditor() {
       }
     });
   });
+
+  alert('Visual editor is enabled.');
 }
 
 function saveDOMAndDownload(file_name) {
