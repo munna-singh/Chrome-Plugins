@@ -1,4 +1,9 @@
-button {
+body {
+  background: -webkit-gradient(linear, left top, left bottom, from(rgb(219 234 252)), to(rgba(255,255,255,1)));
+  background: -o-linear-gradient(top, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
+  background: linear-gradient(180deg, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
+}
+  button {
   height: 30px;
   width: 100px;
   outline: none;
@@ -29,7 +34,7 @@ error-message {
   color: brown;
 }
 fieldset {
-  padding: 6px 20px;
+  padding: 0px 20px;
   border-radius: 0;
   margin-bottom: 0px;
   overflow: hidden;
@@ -37,11 +42,6 @@ fieldset {
   border: 1px solid #828282;
   margin-top: -4px;
   border-bottom: 0;
-  background: -webkit-gradient(linear, left top, left bottom, from(rgb(219 234 252)), to(rgba(255,255,255,1)));
-  background: -o-linear-gradient(top, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
-  background: linear-gradient(180deg, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
-  -webkit-box-shadow: 0 0 10px 1px lightsteelblue;
-  box-shadow: 0 0 10px 1px lightsteelblue;
 }
 legend {
   background: #fff;
@@ -267,8 +267,7 @@ fieldset.lastfield {
   border-bottom-right-radius: 8px;
 }
 legend.heading p {
-  margin: 0;
   font-size: 12px;
   font-weight: 400;
-  margin-top: 12px;
+  margin: 4px 0 0;
 }
