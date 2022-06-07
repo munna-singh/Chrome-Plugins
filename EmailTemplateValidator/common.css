@@ -1,7 +1,14 @@
+* {
+  margin: 0;
+  padding: 0;
+}
 body {
   background: -webkit-gradient(linear, left top, left bottom, from(rgb(219 234 252)), to(rgba(255,255,255,1)));
   background: -o-linear-gradient(top, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
   background: linear-gradient(180deg, rgb(219 234 252) 0%, rgba(255,255,255,1) 100%);
+}
+.fit {
+  padding: 10px;
 }
   button {
   height: 30px;
@@ -48,7 +55,7 @@ legend {
   /* For better legibility against the box-shadow */
 }
 legend span {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: bold;
 }
 fieldset > legend {
@@ -129,10 +136,12 @@ select {
 }
 /*Toggle CSS */
 .switch {
-  position: relative;
   display: inline-block;
-  width: 60px;
-  height: 28px;
+  width: 44px;
+  height: 18px;
+  position: absolute;
+  right: -4px;
+  top: 10px;
 }
 .switch input { 
   opacity: 0;
@@ -153,10 +162,10 @@ select {
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
-  left: 8px;
-  bottom: 4px;
+  height: 12px;
+  width: 12px;
+  left: 0px;
+  bottom: 3px;
   background-color: white;
   -webkit-transition: .4s;
   transition: .4s;
@@ -231,7 +240,7 @@ border-image: linear-gradient(to right, #ff000000, #1e1e1e, #d10e0e00)1;
 }
 .heading.active + .content  {
   opacity: 1;
-max-height: 500px;
+  max-height: 500px;
   display: inline-block;
   padding-top: 14px;
 }
@@ -248,14 +257,17 @@ button.validate {
   cursor: pointer;
 }
 span.setting_link a {
-  display: block;
-  font-weight: 500;
-  text-decoration: none !important;
-  font-size: 13px;
-  margin: 0;
-  padding: 4px 0 0;
-  line-height: 01;
-  color: #0074b6;
+  display: inline-block;
+    font-weight: 500;
+    text-decoration: none !important;
+    font-size: 13px;
+    margin: 0;
+    padding: 4px 0 0;
+    line-height: 01;
+    color: #0074b6;
+    position: relative;
+    top: 3px;
+    right: -5px;
 }
 fieldset.firstfield {
   border-top-left-radius: 8px;
@@ -267,7 +279,10 @@ fieldset.lastfield {
   border-bottom-right-radius: 8px;
 }
 legend.heading p {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 400;
   margin: 4px 0 0;
+}
+span.setting_link a img {
+  width: 12px;
 }
