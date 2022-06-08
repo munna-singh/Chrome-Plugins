@@ -1,9 +1,9 @@
 enableVisualEditor.addEventListener("click", async () => {
-  saveDOM.disabled = false;
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: EnableVEditor,
+    args: [chrome.runtime.getURL("popup.html")]
   });
 });
 
@@ -20,7 +20,7 @@ saveDOM.addEventListener("click", async () => {
   });
 });
 
-function EnableVEditor() {
+function EnableVEditor(pluginPath) {
   document.designMode = "on";
 
   document.body.addEventListener('contextmenu', function(e) {
@@ -28,7 +28,10 @@ function EnableVEditor() {
       LAST_ELEMENT = e.target;
   }, false);
 
+  
   // add the CSS as a string using template literals
+  const head = document.getElementsByTagName("head")[0];
+
   const style = document.createElement("style");
   style.setAttribute("id", "my-gale-popup-modal-css");
   style.appendChild(
@@ -82,9 +85,25 @@ function EnableVEditor() {
 
   // add it to the head
   if (document.getElementById("my-gale-popup-modal-css") === null) {
-    const head = document.getElementsByTagName("head")[0];
     head.appendChild(style);
   }
+
+  //Get pat of pulugin folder
+  let relativePath = pluginPath.replace("popup.html","");
+    //Add tinymce css to page
+    const tinySkin = document.createElement("link");
+    tinySkin.setAttribute("id", "tinymce-skin-css");
+
+     // set the attributes for link element
+     tinySkin.rel = 'stylesheet';
+     tinySkin.type = 'text/css';
+     tinySkin.href = relativePath + 'scripts/tinymce/skins/ui/oxide/skin.min.css';
+     // Append link element to HTML head
+     //head.appendChild(tinySkin);
+
+    // <link rel='stylesheet' href='scripts/tinymce/skins/ui/oxide/skin.min.css' />
+    // <link rel='stylesheet' href='scripts/tinymce/skins/ui/oxide/content.min.css' />
+    // <link rel='stylesheet' href='scripts/tinymce/skins/ui/oxide/content.inline.min.css' />
 
   var divTag = document.createElement("div");
   divTag.setAttribute("id", "my-gale-popup-modal");
