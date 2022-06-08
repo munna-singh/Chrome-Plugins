@@ -45,6 +45,20 @@ chrome.runtime.onInstalled.addListener(() => {
     id: "u",
     contexts: ["selection"],
   });
+
+  chrome.contextMenus.create({
+    title: "Strikethrough",
+    parentId: "GALEEmailValidator",
+    id: "s",
+    contexts: ["selection"],
+  });
+
+  chrome.contextMenus.create({
+    title: "Anchor Tag",
+    parentId: "GALEEmailValidator",
+    id: "a",
+    contexts: ["selection"],
+  });
   chrome.contextMenus.create({
     title: "HTML Editor",
     parentId: "GALEEmailValidator",
@@ -88,8 +102,8 @@ function TestContextMenu(info) {
       }
     }
 
-    let nextHTMLContent = nextSibs.join('');
-    let previousHTMLContext = prevSibs.reverse().join('');
+    let nextHTMLContent = nextSibs.join("");
+    let previousHTMLContext = prevSibs.reverse().join("");
     let ctrl = LAST_SELECTION.getRangeAt(0).startContainer.parentNode;
     let innerHTMLVal = LAST_SELECTION.anchorNode.textContent; //ctrl.innerHTML;
     let formattedText = "";
@@ -102,9 +116,58 @@ function TestContextMenu(info) {
       case "strong":
       case "em":
       case "u":
+      case "s":
         formattedText = `${firstPart}<${info.menuItemId}>${selectedText}</${info.menuItemId}>${lastPart}`;
         break;
+      case "a":
+        formattedText = `${firstPart}<${info.menuItemId} href='#' alias=''>${selectedText}</${info.menuItemId}>${lastPart}`;
+        break;
       case "HTMLEditor":
+        //Disable edit option
+        document.designMode = "off";
+        var modal = document.getElementById("my-gale-popup-modal");
+        var dynamicDiv = document.getElementById("dynamic-text-div");
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        // Get the button that opens the modal
+        var btnUpdate = document.getElementById("btnUpdateImgSrc");
+
+        let dynamicContent =
+          "<table width='100%'><tr><td><h1 style='color: maroon;'>Rich Text Editor</h1></td></tr>";
+        dynamicContent += `<tr><td> <textarea id="GALE-RTE"  style="width: 90%;">${ctrl.innerHTML}</textarea></td></tr>`;
+
+        dynamicContent += "</table>";
+        dynamicDiv.innerHTML = dynamicContent;
+
+        if (tinymce.activeEditor === null) {
+          tinymce.init({
+            selector: "#GALE-RTE",
+          });
+        }
+
+        modal.style.display = "block";
+
+        //Update source code
+        btnUpdate.onclick = function () {
+          debugger;
+          let rte = tinymce.activeEditor.getContent();
+          if (rte.startsWith("<p>")) {
+            rte = rte.substring(3, rte.length - 4);
+          }
+          ctrl.innerHTML = rte;
+          modal.style.display = "none";
+          //Enable edit option
+          document.designMode = "on";
+        };
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+          modal.style.display = "none";
+          tinymce.remove();
+          //Enable edit option
+          document.designMode = "on";
+        };
+
         break;
       default:
         break;
