@@ -21,9 +21,9 @@ fieldset[0].classList.add("firstfield");
 fieldset[fieldset.length - 1].classList.add("lastfield");
 document.getElementById("visual").addEventListener("change", function() {
     if (document.getElementById("visual").checked == true) {
-      document.getElementById('visualcontent').classList.add('active');
+      document.getElementById('visualcontent').classList.add("active");
     } else {
-        document.getElementById('visualcontent').classList.remove('active');
+        document.getElementById('visualcontent').classList.remove("active");
     }
   });
   
