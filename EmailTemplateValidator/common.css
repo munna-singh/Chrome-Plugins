@@ -293,3 +293,11 @@ legend.heading p {
 span.setting_link a img {
   width: 12px;
 }
+hr {
+  display: inline-block;
+  width: 100%;
+  padding: 5px 0;
+  border-image: linear-gradient(to right, #ff000000, #1e1e1e, #d10e0e00)1;
+  border-bottom: 0px solid black;
+  margin-top: 5px;
+}
