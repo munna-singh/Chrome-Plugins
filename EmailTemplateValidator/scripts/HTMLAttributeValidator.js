@@ -31,7 +31,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
   for (i = 0; i < ctrls.length; i++) {
     var ctrl = ctrls[i].split(":")[0];
     var attrs = ctrls[i].split(":")[1].replace("\n", "").trim().split(",");
-    var nodes = document.querySelectorAll(ctrl);
+    var nodes = document.querySelectorAll(ctrl.trim());
     var valueEmpty = false;
     if (!errorCtl.hasOwnProperty(ctrl)) {
       errorCtl[ctrl] = [];
@@ -43,8 +43,8 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
       let atleastOneAttributeToDisplay = false;
       for (y = 0; y < attrs.length; y++) {
         let ignoreForScreen = false;
-        let ctrlTypeName = attrs[y];
-        if (attrs[y].startsWith("-")) {
+        let ctrlTypeName = attrs[y].trim();
+        if (ctrlTypeName.startsWith("-")) {
           ignoreForScreen = true;
           ctrlTypeName = attrs[y].substring(1, attrs[y].length);
         }
@@ -89,10 +89,10 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
 
   if (ctrlWithIssue.length > 0) {
     alert(
-      "Attribute validation failed. Please check screen or console log for details."
+      "HTML ATTRIBUTES:: Attribute validation failed. Please check screen or console log for details."
     );
   } else {
-    alert("Validation is successful.");
+    alert("HTML ATTRIBUTES:: Validation is successful.");
   }
 
   //Inject style
@@ -131,21 +131,23 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
   }
 }
 
-// htmlAttributeText.addEventListener("blur", async () => {
-//   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-//   chrome.scripting.executeScript({
-//     target: { tabId: tab.id },
-//     func: SetCtrlValue,
-//     args: [htmlAttributeText.value],
-//   });
-// });
+htmlAttributeText.addEventListener("blur", async () => {
+  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: SetCtrlValue,
+    args: [htmlAttributeText.value],
+  });
+});
 
-// function SetCtrlValue(val) {
-//   chrome.storage.sync.set({'htmlAttrs': val });
-// }
+function SetCtrlValue(val) {
+  chrome.storage.sync.set({Attrs: val}, function() {
+    console.log('Plugin value is set.');
+  });  
+}
 
-// function GetCtrlVal(){
-//   chrome.storage.sync.get("htmlAttrs", function(data) {
-//     console.log(data);
-//   });
-// }
+htmlAttrsSwitch.addEventListener('change', function () {
+  chrome.storage.sync.set({AttrsSwitch: htmlAttrsSwitch.checked}, function() {
+    console.log('AttrsSwitch value is set.');
+  });  
+});

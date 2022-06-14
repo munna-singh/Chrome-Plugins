@@ -5,6 +5,17 @@ var htmlAttributeValidator = document.getElementById("btnValidateAttributes");
 var htmlAttributeText = document.getElementById("htmlAttributes");
 var saveDOM = document.getElementById("saveDOM");
 var linkValidator = document.getElementById("btnValidateLink");
+var globalValidator = document.getElementById("globalValidator");
+var ignoreFullURL = document.getElementById("ignore-full-URL");
+
+//Toggle box
+var htmlAttrsSwitch = document.getElementById("htmlAttrsChk");
+var linkValidatorSwitch = document.getElementById("linkValidatorChk");
+var contentCheckSwitch = document.getElementById("htmlContentChk");
+
+//All content checkbox
+var contentValidationChks = document.querySelectorAll(".ctrl-chkbox");
+
 // Accordian 
 let headings = document.querySelectorAll(".heading");
 headings.forEach(function(heading){
@@ -19,6 +30,34 @@ headings.forEach(function(heading){
 let fieldset = document.querySelectorAll('fieldset');
 fieldset[0].classList.add("firstfield");
 fieldset[fieldset.length - 1].classList.add("lastfield");
+
+
+//Global Validator click action
+globalValidator.addEventListener("click", async () => {
+    let activeCtrl = false;
+
+    //HTML Attribute Validator
+    if(htmlAttrsSwitch.checked){
+        htmlAttributeValidator.click();
+        activeCtrl = true;
+    }
+    //Link Validator
+    if(linkValidatorSwitch.checked){
+        linkValidator.click();
+        activeCtrl = true;
+    }
+    //HTML Content Validator
+    if(contentCheckSwitch.checked){
+        validateTag.click();
+        activeCtrl = true;
+    }
+
+    if(activeCtrl === false){
+        alert("Please enable validation switch to start the validation.");
+    }
+    
+});
+
 document.getElementById("visual").addEventListener("change", function() {
     if (document.getElementById("visual").checked == true) {
       document.getElementById('visualcontent').classList.add("active");
@@ -27,3 +66,4 @@ document.getElementById("visual").addEventListener("change", function() {
     }
   });
   
+

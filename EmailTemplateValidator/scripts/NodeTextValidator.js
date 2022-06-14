@@ -222,10 +222,10 @@ function ValidateNode(
   }
 
   if (errorCtrls.length === 0) {
-    alert("Validation successful. No discrepancy detected!!!");
+    alert("HTML CONTENT:: Validation successful. No discrepancy detected!!!");
   } else {
     alert(
-      "Validation error. Please check console log for list of controls which has issue"
+      "HTML CONTENT:: Validation error. Please check console log for list of controls which has issue"
     );
     // console.log(errorCtrls);
     // create a style element
@@ -247,3 +247,25 @@ function ValidateNode(
     head.appendChild(style);
   }
 }
+
+contentCheckSwitch.addEventListener('change', function () {
+  chrome.storage.sync.set({ContentValidationSwitch: contentCheckSwitch.checked}, function() {
+    console.log('ContentValidationSwitch value is set.');
+  });  
+});
+
+//ignoreFullURL
+ignoreFullURL.addEventListener('change', function () {
+  chrome.storage.sync.set({IgnoreFullURL: ignoreFullURL.checked}, function() {
+    console.log('IgnoreFullURL value is set.');
+  });  
+});
+
+contentValidationChks.forEach(el => el.addEventListener('change', event => {
+  debugger;
+  //let varName = el.name;
+  chrome.storage.sync.set({["contentValChk-" + el.name]: el.checked}, function() {
+    console.log('ContentValidationSwitch value is set.');
+  }); 
+}));
+
