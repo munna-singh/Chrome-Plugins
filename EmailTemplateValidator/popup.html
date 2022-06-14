@@ -30,7 +30,7 @@
     <tr>
       <td>
         <div>
-          <button class="validate">Validate</button>
+          <button class="validate" id="globalValidator">Validate</button>
         </div>
       </td>
     </tr>
@@ -46,7 +46,7 @@
                 
               </span> 
               <label class="switch">
-              <input type="checkbox" checked>
+              <input type="checkbox" checked id="htmlAttrsChk">
               <span class="slider round"></span>
             </label>
           </legend>
@@ -85,7 +85,7 @@
               <p>To check the validity of links on the page, click "Validate Link" button.</p>
             </span> 
               <label class="switch">
-                <input type="checkbox" checked>
+                <input type="checkbox" checked id="linkValidatorChk">
                 <span class="slider round"></span>
               </label>
             </legend>
@@ -110,7 +110,7 @@
               <p> This section helps in validating content on the page based on provided source file in specified format. Format of file can be downloaded by clicking on "Example File" button.</p>
             </span> 
               <label class="switch">
-              <input type="checkbox" checked>
+              <input type="checkbox" checked id="htmlContentChk">
               <span class="slider round"></span>
             </label>
           </legend>
@@ -158,8 +158,9 @@
               </tr>
               <tr>
                 <td style="padding-left: 5px;">
-                  <input type='checkbox' name='ignore-anchro-inside-ctrls' id='ignore-anchro-inside-ctrls'>
-                  <label for='input'>Ignore the element(s) if it is inside P or H tag</label><br>
+                  <hr>
+                  <input type='checkbox' id='ignore-full-URL'>
+                  <label for='input'>Validate base URL only</label><br>
                 </td>
               </tr>
               <tr>
@@ -253,6 +254,7 @@
   <script src='../scripts/HTMLAttributeValidator.js'></script>
   <script src='../scripts/ExampleFileGenerator.js'></script>
   <script src='../scripts/NodeTextValidator.js'></script>
+  <script src='../scripts/Common.js'></script>
 </body>
 
 </html>

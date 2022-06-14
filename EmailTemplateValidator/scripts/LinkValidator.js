@@ -63,3 +63,9 @@ function ValidateHrefLinks() {
     });
   }
 }
+
+linkValidatorSwitch.addEventListener('change', function () {
+  chrome.storage.sync.set({ValidateLinkSwitch: linkValidatorSwitch.checked}, function() {
+    console.log('ValidateLinkSwitch value is set.');
+  });  
+});
