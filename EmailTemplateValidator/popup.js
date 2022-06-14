@@ -31,6 +31,7 @@ let fieldset = document.querySelectorAll('fieldset');
 fieldset[0].classList.add("firstfield");
 fieldset[fieldset.length - 1].classList.add("lastfield");
 
+
 //Global Validator click action
 globalValidator.addEventListener("click", async () => {
     let activeCtrl = false;
@@ -56,3 +57,13 @@ globalValidator.addEventListener("click", async () => {
     }
     
 });
+
+document.getElementById("visual").addEventListener("change", function() {
+    if (document.getElementById("visual").checked == true) {
+      document.getElementById('visualcontent').classList.add("active");
+    } else {
+        document.getElementById('visualcontent').classList.remove("active");
+    }
+  });
+  
+
