@@ -16,54 +16,51 @@ var contentCheckSwitch = document.getElementById("htmlContentChk");
 //All content checkbox
 var contentValidationChks = document.querySelectorAll(".ctrl-chkbox");
 
-// Accordian 
+// Accordian
 let headings = document.querySelectorAll(".heading");
-headings.forEach(function(heading){
-    heading.addEventListener('click', function(){
-        let hedingActive = document.querySelector(".heading.active");
-        if(hedingActive && hedingActive!==heading){
-            hedingActive.classList.remove("active");
-        }
-        heading.classList.toggle("active");
-    })
-})
-let fieldset = document.querySelectorAll('fieldset');
+headings.forEach(function (heading) {
+  heading.addEventListener("click", function () {
+    let hedingActive = document.querySelector(".heading.active");
+    if (hedingActive && hedingActive !== heading) {
+      hedingActive.classList.remove("active");
+    }
+    heading.classList.toggle("active");
+  });
+});
+let fieldset = document.querySelectorAll("fieldset");
 fieldset[0].classList.add("firstfield");
 fieldset[fieldset.length - 1].classList.add("lastfield");
 
-
 //Global Validator click action
 globalValidator.addEventListener("click", async () => {
-    let activeCtrl = false;
+  let activeCtrl = false;
 
-    //HTML Attribute Validator
-    if(htmlAttrsSwitch.checked){
-        htmlAttributeValidator.click();
-        activeCtrl = true;
-    }
-    //Link Validator
-    if(linkValidatorSwitch.checked){
-        linkValidator.click();
-        activeCtrl = true;
-    }
-    //HTML Content Validator
-    if(contentCheckSwitch.checked){
-        validateTag.click();
-        activeCtrl = true;
-    }
+  //HTML Attribute Validator
+  if (htmlAttrsSwitch.checked) {
+    htmlAttributeValidator.click();
+    activeCtrl = true;
+  }
+  //Link Validator
+  if (linkValidatorSwitch.checked) {
+    linkValidator.click();
+    activeCtrl = true;
+  }
+  //HTML Content Validator
+  if (contentCheckSwitch.checked) {
+    validateTag.click();
+    activeCtrl = true;
+  }
 
-    if(activeCtrl === false){
-        alert("Please enable validation switch to start the validation.");
-    }
-    
+  if (activeCtrl === false) {
+    alert("Please enable validation switch to start the validation.");
+  }
 });
 
-document.getElementById("visual").addEventListener("change", function() {
-    if (document.getElementById("visual").checked == true) {
-      document.getElementById('visualcontent').classList.add("active");
-    } else {
-        document.getElementById('visualcontent').classList.remove("active");
-    }
-  });
-  
-
+document.getElementById("visual").addEventListener("change", function () {
+  if (document.getElementById("visual").checked == true) {
+    document.getElementById("visualcontent").classList.add("active");
+    enableVisualEditor.click();
+  } else {
+    document.getElementById("visualcontent").classList.remove("active");
+  }
+});
