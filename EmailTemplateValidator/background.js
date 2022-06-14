@@ -6,7 +6,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
   var contextMenuItem = {
     id: "GALEEmailValidator",
-    title: "Gale Page Validator",
+    title: "GALE Page Editor",
     contexts: ["selection"],
   };
   chrome.contextMenus.removeAll();
