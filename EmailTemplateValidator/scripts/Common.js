@@ -34,6 +34,11 @@ function prepopulateData() {
         if(items.IgnoreFullURL != undefined && items.IgnoreFullURL !== null && items.IgnoreFullURL !== ""){
             ignoreFullURL.checked = items.IgnoreFullURL;
         }
+
+        //Nested Ctrl checkbox
+        if(items.IgnoreNestedCtrls != undefined && items.IgnoreNestedCtrls !== null && items.IgnoreNestedCtrls !== ""){
+            ignoreNestedCtrlChk.checked = items.IgnoreNestedCtrls;
+        }
     });
 }
 

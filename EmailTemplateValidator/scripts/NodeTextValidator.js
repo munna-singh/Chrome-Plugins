@@ -4,9 +4,7 @@ validateTag.addEventListener("click", async () => {
   // console.log(validateOptionsCtrl.value);
   var srcFile = document.getElementById("src-lcaol-file");
   var ctrlToValidate = document.querySelectorAll(".ctrl-chkbox:checked");
-  var ignoreNestedCtrl = document.getElementById(
-    "ignore-anchro-inside-ctrls"
-  ).checked;
+  var ignoreNestedCtrl = ignoreNestedCtrlChk.checked;
 
   if (ctrlToValidate.length === 0) {
     document.getElementById("validationError").innerHTML =
@@ -262,10 +260,14 @@ ignoreFullURL.addEventListener('change', function () {
 });
 
 contentValidationChks.forEach(el => el.addEventListener('change', event => {
-  debugger;
-  //let varName = el.name;
   chrome.storage.sync.set({["contentValChk-" + el.name]: el.checked}, function() {
     console.log('ContentValidationSwitch value is set.');
   }); 
 }));
 
+//ignoreNestedCtrl
+ignoreNestedCtrlChk.addEventListener('change', function () {
+  chrome.storage.sync.set({IgnoreNestedCtrls: ignoreNestedCtrlChk.checked}, function() {
+    console.log('IgnoreNestedCtrls value is set.');
+  });  
+});

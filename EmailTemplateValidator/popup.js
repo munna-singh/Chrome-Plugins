@@ -7,6 +7,7 @@ var saveDOM = document.getElementById("saveDOM");
 var linkValidator = document.getElementById("btnValidateLink");
 var globalValidator = document.getElementById("globalValidator");
 var ignoreFullURL = document.getElementById("ignore-full-URL");
+var ignoreNestedCtrlChk = document.getElementById("ignore-anchro-inside-ctrls");
 
 //Toggle box
 var htmlAttrsSwitch = document.getElementById("htmlAttrsChk");
