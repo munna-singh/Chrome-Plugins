@@ -3,7 +3,7 @@ enableVisualEditor.addEventListener("click", async () => {
   chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: EnableVEditor,
-    args: [chrome.runtime.getURL("popup.html")]
+    args: [chrome.runtime.getURL("popup.html")],
   });
 });
 
@@ -20,15 +20,18 @@ saveDOM.addEventListener("click", async () => {
   });
 });
 
-function EnableVEditor(pluginPath) {
+this.EnableVEditor = function (pluginPath) {
   document.designMode = "on";
 
-  document.body.addEventListener('contextmenu', function(e) {
+  document.body.addEventListener(
+    "contextmenu",
+    function (e) {
       LAST_SELECTION = window.getSelection();
       LAST_ELEMENT = e.target;
-  }, false);
+    },
+    false
+  );
 
-  
   // add the CSS as a string using template literals
   const head = document.getElementsByTagName("head")[0];
 
@@ -88,23 +91,6 @@ function EnableVEditor(pluginPath) {
     head.appendChild(style);
   }
 
-  //Get pat of pulugin folder
-  let relativePath = pluginPath.replace("popup.html","");
-    //Add tinymce css to page
-    const tinySkin = document.createElement("link");
-    tinySkin.setAttribute("id", "tinymce-skin-css");
-
-     // set the attributes for link element
-     tinySkin.rel = 'stylesheet';
-     tinySkin.type = 'text/css';
-     tinySkin.href = relativePath + 'scripts/tinymce/skins/ui/oxide/skin.min.css';
-     // Append link element to HTML head
-     //head.appendChild(tinySkin);
-
-    // <link rel='stylesheet' href='scripts/tinymce/skins/ui/oxide/skin.min.css' />
-    // <link rel='stylesheet' href='scripts/tinymce/skins/ui/oxide/content.min.css' />
-    // <link rel='stylesheet' href='scripts/tinymce/skins/ui/oxide/content.inline.min.css' />
-
   var divTag = document.createElement("div");
   divTag.setAttribute("id", "my-gale-popup-modal");
   divTag.setAttribute("class", "modal");
@@ -125,55 +111,54 @@ function EnableVEditor(pluginPath) {
     body.appendChild(divTag);
   }
 
+  // Get the modal
+  var modal = document.getElementById("my-gale-popup-modal");
+  var dynamicDiv = document.getElementById("dynamic-text-div");
+
+  // Get the button that opens the modal
+  var btnUpdate = document.getElementById("btnUpdateImgSrc");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+    //Enable edit mode
+    document.designMode = "on";
+  };
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+      //Enable edit mode
+      document.designMode = "on";
+    }
+  };
+
   var imgs = document.querySelectorAll("img");
   imgs.forEach((img) => {
     img.addEventListener("click", (event) => {
-      // Get the modal
-      var modal = document.getElementById("my-gale-popup-modal");
-      var dynamicDiv = document.getElementById("dynamic-text-div");
-
-      // Get the button that opens the modal
-      var btnUpdate = document.getElementById("btnUpdateImgSrc");
-
-      // Get the <span> element that closes the modal
-      var span = document.getElementsByClassName("close")[0];
-
+      //Disable edit mode
+      document.designMode = "off";
       // When the user clicks the button, open the modal
-      let dynamicContent =
-        "<table><tr><td></td><td><h1 style='color: maroon;'>Image</h1></td></tr>";
-      img.getAttributeNames().forEach(function (val) {
-        dynamicContent += `<tr><td> ${val} </td><td> <textarea id="GALE-${val}"  style="width: 500px;">${img.getAttribute(
-          val
-        )}</textarea></td></tr>`;
-      });
-      dynamicContent += "</table>";
-      dynamicDiv.innerHTML = dynamicContent;
-      modal.style.display = "block";
+      createDynamicAttributeControl(img, dynamicDiv, modal);
 
       //Update source code
       btnUpdate.onclick = function () {
-        img.getAttributeNames().forEach(function (val) {
-          img.setAttribute(val, document.getElementById("GALE-" + val).value);
-        });
-        modal.style.display = "none";
-      };
-      // When the user clicks on <span> (x), close the modal
-      span.onclick = function () {
-        modal.style.display = "none";
-      };
-
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function (event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
+        updateAttributes(img);
       };
     });
   });
+
   var anchors = document.querySelectorAll("a");
   anchors.forEach((anchor) => {
     anchor.addEventListener("click", (event) => {
       event.preventDefault();
+      //Disable edit mode
+      document.designMode = "off";
+
       const childCtrl =
         anchor.children.length > 0 ? anchor.children[0].nodeName : "Unknown";
       let showAnchor = true;
@@ -187,75 +172,62 @@ function EnableVEditor(pluginPath) {
         showAnchor = true;
       }
       if (showAnchor) {
-        // Get the modal
-        var modal = document.getElementById("my-gale-popup-modal");
-        var dynamicDiv = document.getElementById("dynamic-text-div");
-
-        // Get the button that opens the modal
-        var btnUpdate = document.getElementById("btnUpdateImgSrc");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
         // When the user clicks the button, open the modal
-
-        let dynamicContent =
-          "<table><tr><td></td><td><h1 style='color: maroon;'>Anchor</h1></td></tr>";
-        anchor.getAttributeNames().forEach(function (val) {
-          dynamicContent += `<tr><td> ${val} </td><td> <textarea id="GALE-${val}"  style="width: 500px;">${anchor.getAttribute(
-            val
-          )}</textarea></td></tr>`;
-        });
-        dynamicContent += "</table>";
-        dynamicDiv.innerHTML = dynamicContent;
-
-        modal.style.display = "block";
+        createDynamicAttributeControl(anchor, dynamicDiv, modal);
 
         //Update source code
         btnUpdate.onclick = function () {
-          anchor.getAttributeNames().forEach(function (val) {
-            anchor.setAttribute(
-              val,
-              document.getElementById("GALE-" + val).value
-            );
-          });
-          modal.style.display = "none";
-        };
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-          modal.style.display = "none";
-        };
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
+          updateAttributes(anchor);
         };
       }
     });
   });
 
-  alert('Visual editor is enabled.');
-}
+  updateAttributes = function (ctrl) {
+    ctrl.getAttributeNames().forEach(function (val) {
+      if (val[0].match(/[a-zA-Z]/i) && !val.match(/[`~!@#$%^&*\(\)+]/i)) {
+        ctrl.setAttribute(val, document.getElementById("GALE-" + val).value);
+      }
+    });
+    modal.style.display = "none";
+    //Enable edit mode
+    document.designMode = "on";
+  };
+  createDynamicAttributeControl = function (ctrl) {
+    let ctrlName = { A: "Anchor", IMG: "Image" };
+    let dynamicContent =
+      "<table><tr><td></td><td><h1 style='color: maroon;'>" +
+      ctrlName[ctrl.nodeName] +
+      "</h1></td></tr>";
+    ctrl.getAttributeNames().forEach(function (val) {
+      if (val[0].match(/[a-zA-Z]/i) && !val.match(/[`~!@#$%^&*\(\)+]/i)) {
+        dynamicContent += `<tr><td> ${val} </td><td> <textarea id="GALE-${val}"  style="width: 500px;">${ctrl.getAttribute(
+          val
+        )}</textarea></td></tr>`;
+      }
+    });
+    dynamicContent += "</table>";
+    dynamicDiv.innerHTML = dynamicContent;
 
-function saveDOMAndDownload(file_name) {
+    modal.style.display = "block";
+  };
+  alert("Visual editor is enabled.");
+};
+
+this.saveDOMAndDownload = function (file_name) {
   //Remove injected code from DOM:
-  //Popup
-  const popDiv = document.getElementById("my-gale-popup-modal");
-  if (popDiv !== null) {
-    popDiv.remove();
-  }
 
-  const popcss = document.getElementById("my-gale-popup-modal-css");
-  if (popcss !== null) {
-    popcss.remove();
-  }
-
-  const errormsg = document.getElementById("my-gale-error-message-css");
-  if (errormsg !== null) {
-    errormsg.remove();
-  }
+  var injectedClassIds = [
+    "my-gale-popup-modal",
+    "my-gale-popup-modal-css",
+    "my-gale-error-message-css",
+  ];
+  injectedClassIds.forEach(function (e) {
+    const ctrl = document.getElementById(e);
+    if (ctrl !== null) {
+      ctrl.remove();
+    }
+  });
 
   //Remove tooltip span
   const boxes = document.querySelectorAll(".gale-tooltip-box");
@@ -273,4 +245,4 @@ function saveDOMAndDownload(file_name) {
   hiddenElement.target = "_blank";
   hiddenElement.download = file_name + ".html";
   hiddenElement.click();
-}
+};
