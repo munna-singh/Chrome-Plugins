@@ -22,6 +22,14 @@ exampleGenerator.addEventListener("click", async () => {
 function GetDOMStructureFromCurrentTab(ctrls) {
   var nodes = document.querySelectorAll(ctrls.join(","));
   var data = [];
+  var valCleaner = function(value){
+    var ctlvalue = value.replace(/"/g, '""');
+    ctlvalue = '"' + ctlvalue + '"';
+    ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
+    ctlvalue = ctlvalue.replace(/\u200C/g, "");
+    ctlvalue = ctlvalue.trim();
+    return ctlvalue;
+  };
   for (var i = 0; i < nodes.length; i++) {
     var source = null;
     var nodeName = nodes[i].nodeName;
@@ -34,23 +42,20 @@ function GetDOMStructureFromCurrentTab(ctrls) {
       source = null;
     }
     ctrlId = nodes[i].getAttribute("Id");
-    var ctlvalue = nodes[i].outerText.replace(/"/g, '""');
-    ctlvalue = '"' + ctlvalue + '"';
-
-    ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
-
-    ctlvalue = ctlvalue.replace(/\u200C/g, "");
-
+    var ctlvalue = valCleaner(nodes[i].outerText);
+    var ctrlAlias = valCleaner(nodes[i].getAttribute("alias"));
+    
     var ctrl = [
       nodes[i].nodeName,
       ctrlId,
       ctlvalue,
+      ctrlAlias,
       source,
       nodes[i].getAttribute("alt"),
     ];
     data.push(ctrl);
   }
-  var csv = "Ctrl, Id, Text, Link, Alt\n";
+  var csv = "Ctrl, Id, Text, Alias, Link, Alt\n";
   data.forEach(function (row) {
     csv += row.join(",");
     csv += "\n";
