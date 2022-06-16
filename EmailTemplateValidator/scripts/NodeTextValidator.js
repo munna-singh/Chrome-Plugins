@@ -5,6 +5,7 @@ validateTag.addEventListener("click", async () => {
   var srcFile = document.getElementById("src-lcaol-file");
   var ctrlToValidate = document.querySelectorAll(".ctrl-chkbox:checked");
   var ignoreNestedCtrl = ignoreNestedCtrlChk.checked;
+  var ignoreQueryString = ignoreFullURL.checked;
 
   if (ctrlToValidate.length === 0) {
     document.getElementById("validationError").innerHTML =
@@ -30,6 +31,7 @@ validateTag.addEventListener("click", async () => {
             seletedCtrls,
             ignoreNestedCtrl,
             validateOptionsCtrl.value,
+            ignoreQueryString,
           ],
         });
       });
@@ -42,16 +44,99 @@ validateTag.addEventListener("click", async () => {
   }
 });
 
-function ValidateNode(
+this.ValidateNode = function (
   sourceFileData,
   ctrls,
   ignoreNestedCtrl,
-  validateOptionsCtrlValue
+  validateOptionsCtrlValue,
+  ignoreQueryString
 ) {
   if (!sourceFileData) {
     return;
   }
 
+  var getFilteredSourceData = function (sourceFileData) {
+    let allRows = sourceFileData.split(/\r?\n|\r/);
+    //Filter data
+    let filteredSourceRow = [];
+    for (x = 1; x < allRows.length; x++) {
+      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      if (
+        splited.length == 6 &&
+        ctrls.find(
+          (element) => element.toUpperCase() == splited[0].toUpperCase()
+        )
+      ) {
+        filteredSourceRow.push(splited);
+      }
+    }
+    return filteredSourceRow;
+  };
+  var valCleaner = function(value){
+    if(value === undefined || value === null){
+      return "";
+    }
+    var ctlvalue = value.replace(/"/g, '""');
+    ctlvalue = '"' + ctlvalue + '"';
+    ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
+    ctlvalue = ctlvalue.replace(/\u200C/g, "");
+    ctlvalue = ctlvalue.trim();
+    return ctlvalue;
+  };
+
+  var compareSourceWithDestination = function (
+    nodeName,
+    node,
+    filteredNode,
+    filteredSourceRow
+  ) {
+    if (nodeName === "A") {
+      source = node.getAttribute("href");
+      if (ignoreQueryString && source.indexOf("?") > 0) {
+        source = source.substring(0, source.indexOf("?"));
+      }
+    } else if (nodeName === "IMG") {
+      source = node.getAttribute("src");
+    }
+    if (source === "#" || source === null) {
+      source = "";
+    }
+    let ctlId = valCleaner(filteredNode.getAttribute("Id")).replaceAll('"', "");
+    let ctrlText = valCleaner(filteredNode.innerText);
+    let altText = valCleaner(filteredNode.getAttribute("alt"));
+    let aliasText = valCleaner(filteredNode.getAttribute("alias"));
+
+    let compareString =
+      nodeName + "," + ctlId + "," + ctrlText + "," + aliasText + "," + source + "," + altText;
+
+    // Replace if any double quotes present on value & alias text
+    //filteredSourceRow[2] = filteredSourceRow[2].replaceAll('"', "");
+    //filteredSourceRow[3] = filteredSourceRow[3].replaceAll('"', "");
+
+    
+    if (
+      filteredSourceRow[0] === "A" &&
+      ignoreQueryString &&
+      filteredSourceRow[4].indexOf("?") > 0
+    ) {
+      filteredSourceRow[4] = filteredSourceRow[4].substring(
+        0,
+        filteredSourceRow[4].indexOf("?")
+      );
+    }
+    var combinedCsvRow = filteredSourceRow.join(",");
+
+    if (combinedCsvRow !== compareString) {
+      console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
+      console.log('File: ' + combinedCsvRow);
+      console.log('Page: ' + compareString);
+      filteredNode.classList.add("gale-validation-error-box");
+      return filteredNode;
+    }
+    return null;
+  };
+
+  debugger;
   // clearPreviousErrors();
   //Clear previous error message by removing the class
   var errorCtrls = document.querySelectorAll(".gale-validation-error-box");
@@ -59,87 +144,27 @@ function ValidateNode(
     errorCtrls[y].classList.remove("gale-validation-error-box");
   }
 
+  var errorCtrls = [];
   console.log(`Validation by - ${validateOptionsCtrlValue}`);
   if (validateOptionsCtrlValue == "id") {
-    var errorCtrls = [];
-    let allRows = sourceFileData.split(/\r?\n|\r/);
-
-    //Filter data
-    // console.log(CSV_COLUMNS);
-    let filteredSourceRow = [];
-    for (x = 1; x < allRows.length; x++) {
-      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-      // console.log(splited);
-      if (splited[1]) {
-        filteredSourceRow.push(splited);
-      }
-    }
+    let filteredSourceRow = getFilteredSourceData(sourceFileData);
 
     for (i = 0; i < filteredSourceRow.length; i++) {
-      // console.log(filteredSourceRow[i])
       var ctrlId_Csv = filteredSourceRow[i][1];
-      var ctrlText_Csv = filteredSourceRow[i][2].replaceAll('"', "");
       var controlDoc = document.getElementById(ctrlId_Csv);
       if (!controlDoc) {
         continue;
       }
 
       ctrlName = controlDoc.tagName;
-      ctrlId = controlDoc.getAttribute("Id");
-
-      ctlvalue = controlDoc.outerText;
-      ctlvalue = ctlvalue.replaceAll('"', "");
-      ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
-      ctlvalue = ctlvalue.replace(/\u200C/g, "");
-      ctlvalue = ctlvalue.trim();
-
-      var source = "";
-      if (ctrlName === "A") {
-        source = controlDoc.getAttribute("href");
-      } else if (ctrlName === "IMG") {
-        source = controlDoc.getAttribute("src");
-      }
-      if (source === "#" || source === null) {
-        source = "";
-      }
-
-      let altText = controlDoc.getAttribute("alt");
-      if (altText === undefined || altText === null) {
-        altText = "";
-      }
-
-      combinedData =
-        ctrlName + "," + ctrlId + "," + ctlvalue + "," + source + "," + altText;
-
-      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', "");
-      var combinedCsvRow = filteredSourceRow[i].join(",");
-
-      // console.log(ctrlText_Csv);
-      if (combinedData !== combinedCsvRow) {
-        console.log(
-          `Mismatch content:> Row No - ${i + 1}---> \n ${combinedCsvRow}`
-        );
-        controlDoc.classList.add("gale-validation-error-box");
-        errorCtrls.push(controlDoc);
+      var fNode = compareSourceWithDestination(ctrlName,controlDoc,controlDoc,filteredSourceRow[i]);
+      if (fNode){
+        errorCtrls.push(fNode);
       }
     }
   } else {
-    let allRows = sourceFileData.split(/\r?\n|\r/);
-    //Filter data
-    let filteredSourceRow = [];
-    for (x = 1; x < allRows.length; x++) {
-      let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-      // console.log(splited);
-      if (
-        splited.length == 5 &&
-        ctrls.find(
-          (element) => element.toUpperCase() == splited[0].toUpperCase()
-        )
-      ) {
-        // console.log(splited);
-        filteredSourceRow.push(splited);
-      }
-    }
+    //Sequential match
+    let filteredSourceRow = getFilteredSourceData(sourceFileData);
 
     var nodes = document.querySelectorAll(ctrls.join(","));
     var filteredNode = [];
@@ -164,57 +189,11 @@ function ValidateNode(
       return;
     }
 
-    var errorCtrls = [];
     for (i = 0; i < filteredSourceRow.length; i++) {
       var nodeName = filteredNode[i].nodeName;
-      var source = null;
-
-      if (nodeName === "A") {
-        source = nodes[i].getAttribute("href");
-      } else if (nodeName === "IMG") {
-        source = nodes[i].getAttribute("src");
-      }
-      if (source === "#" || source === null) {
-        source = "";
-      }
-      let ctlId = filteredNode[i].getAttribute("Id");
-      if (ctlId === undefined || ctlId === null) {
-        ctlId = "";
-      }
-
-      let ctrlText = filteredNode[i].innerText;
-      if (
-        filteredNode[i].innerText === undefined ||
-        filteredNode[i].innerText === null
-      ) {
-        ctrlText = "";
-      } else {
-        ctrlText = ctrlText.replaceAll('"', "");
-        ctrlText = ctrlText.replace(/\u00a0/g, " ");
-        ctrlText = ctrlText.replace(/\u200C/g, "");
-        ctrlText = ctrlText.trim();
-      }
-
-      let altText = filteredNode[i].getAttribute("alt");
-      if (
-        filteredNode[i].getAttribute("alt") === undefined ||
-        filteredNode[i].getAttribute("alt") === null
-      ) {
-        altText = "";
-      }
-
-      let compareString =
-        nodeName + "," + ctlId + "," + ctrlText + "," + source + "," + altText;
-
-      // Replace if any double quotes present on value text
-      filteredSourceRow[i][2] = filteredSourceRow[i][2].replaceAll('"', "");
-      var combinedCsvRow = filteredSourceRow[i].join(",");
-
-      if (combinedCsvRow !== compareString) {
-        console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
-        console.log(combinedCsvRow);
-        filteredNode[i].classList.add("gale-validation-error-box");
-        errorCtrls.push(filteredNode[i]);
+      var fNode = compareSourceWithDestination(nodeName,nodes[i],filteredNode[i],filteredSourceRow[i]);
+      if (fNode){
+        errorCtrls.push(fNode);
       }
     }
   }
@@ -244,30 +223,44 @@ function ValidateNode(
     const head = document.getElementsByTagName("head")[0];
     head.appendChild(style);
   }
-}
+};
 
-contentCheckSwitch.addEventListener('change', function () {
-  chrome.storage.sync.set({ContentValidationSwitch: contentCheckSwitch.checked}, function() {
-    console.log('ContentValidationSwitch value is set.');
-  });  
+contentCheckSwitch.addEventListener("change", function () {
+  chrome.storage.sync.set(
+    { ContentValidationSwitch: contentCheckSwitch.checked },
+    function () {
+      console.log("ContentValidationSwitch value is set.");
+    }
+  );
 });
 
 //ignoreFullURL
-ignoreFullURL.addEventListener('change', function () {
-  chrome.storage.sync.set({IgnoreFullURL: ignoreFullURL.checked}, function() {
-    console.log('IgnoreFullURL value is set.');
-  });  
+ignoreFullURL.addEventListener("change", function () {
+  chrome.storage.sync.set(
+    { IgnoreFullURL: ignoreFullURL.checked },
+    function () {
+      console.log("IgnoreFullURL value is set.");
+    }
+  );
 });
 
-contentValidationChks.forEach(el => el.addEventListener('change', event => {
-  chrome.storage.sync.set({["contentValChk-" + el.name]: el.checked}, function() {
-    console.log('ContentValidationSwitch value is set.');
-  }); 
-}));
+contentValidationChks.forEach((el) =>
+  el.addEventListener("change", (event) => {
+    chrome.storage.sync.set(
+      { ["contentValChk-" + el.name]: el.checked },
+      function () {
+        console.log("ContentValidationSwitch value is set.");
+      }
+    );
+  })
+);
 
 //ignoreNestedCtrl
-ignoreNestedCtrlChk.addEventListener('change', function () {
-  chrome.storage.sync.set({IgnoreNestedCtrls: ignoreNestedCtrlChk.checked}, function() {
-    console.log('IgnoreNestedCtrls value is set.');
-  });  
+ignoreNestedCtrlChk.addEventListener("change", function () {
+  chrome.storage.sync.set(
+    { IgnoreNestedCtrls: ignoreNestedCtrlChk.checked },
+    function () {
+      console.log("IgnoreNestedCtrls value is set.");
+    }
+  );
 });
