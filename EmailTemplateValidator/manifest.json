@@ -13,8 +13,7 @@
         "contextMenus",
         "notifications",
         "scripting",
-        "tabs",
-        "webNavigation"
+        "tabs"
     ],
     "action": {
         "default_popup": "popup.html",
