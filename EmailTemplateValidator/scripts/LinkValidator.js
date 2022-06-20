@@ -18,7 +18,7 @@ function ValidateHrefLinks() {
   var links = document.querySelectorAll("a");
   links.forEach((link) => {
     const val = link.getAttribute("href");
-    if (val !== "#" && val !== "" && val !== "/" && val != null) {
+    if (val !== "#" && val !== "" && val !== "/" && val != null && val.startsWith("javascript" && val.startsWith("#") && val.startsWith("mailto" && val.startsWith("tel")))) {
       req_params.push(link.href);
       var oneurl = {
         text: link.innerText,
@@ -42,7 +42,7 @@ function ValidateHrefLinks() {
         res.forEach(function (row) {
           csv += `${urls[row.source_url].text
             .replaceAll(",", " ")
-            .trim()},${row.source_url.trim()},${row.response_code},${
+            .trim()},"${row.source_url.trim()}",${row.response_code},${
             row.redirect_url
           }\n`;
         });
