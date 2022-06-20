@@ -39,6 +39,11 @@ function prepopulateData() {
         if(items.IgnoreNestedCtrls != undefined && items.IgnoreNestedCtrls !== null && items.IgnoreNestedCtrls !== ""){
             ignoreNestedCtrlChk.checked = items.IgnoreNestedCtrls;
         }
+
+        //Alias text checkbox
+        if(items.considerAliasAsText != undefined && items.considerAliasAsText !== null && items.considerAliasAsText !== ""){
+            aliasTextChk.checked = items.considerAliasAsText;
+        }
     });
 }
 

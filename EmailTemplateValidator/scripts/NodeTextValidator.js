@@ -264,3 +264,13 @@ ignoreNestedCtrlChk.addEventListener("change", function () {
     }
   );
 });
+
+//aliasText
+aliasTextChk.addEventListener("change", function () {
+  chrome.storage.sync.set(
+    { considerAliasAsText: aliasTextChk.checked },
+    function () {
+      console.log("considerAliasAsText value is set.");
+    }
+  );
+});
