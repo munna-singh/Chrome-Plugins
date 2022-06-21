@@ -150,8 +150,10 @@ this.ValidateNode = function (
       console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
       console.log('File: ' + combinedCsvRow);
       console.log('Page: ' + compareString);
-      filteredNode.classList.add("gale-validation-error-box");
-      return filteredNode;
+      // Bug fix: for tags like A, Img, for alias incorrect values "filteredNode" was not highliting with red box as Error.
+      const immediateParent = filteredNode.parentElement;
+      immediateParent.classList.add("gale-validation-error-box");
+      return immediateParent;
     }
     return null;
   };
