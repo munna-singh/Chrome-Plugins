@@ -1,6 +1,8 @@
 validateTag.addEventListener("click", async () => {
   // console.log(CSV_COLUMNS);
   validateOptionsCtrl = document.getElementById("match_options"); // validate options control
+  var aliasTextChk = document.getElementById("alias-text").checked;
+  option_selected = {'text_validation':!aliasTextChk,'alias_validation':aliasTextChk};
   // console.log(validateOptionsCtrl.value);
   var srcFile = document.getElementById("src-lcaol-file");
   var ctrlToValidate = document.querySelectorAll(".ctrl-chkbox:checked");
@@ -32,6 +34,7 @@ validateTag.addEventListener("click", async () => {
             ignoreNestedCtrl,
             validateOptionsCtrl.value,
             ignoreQueryString,
+            option_selected
           ],
         });
       });
@@ -49,7 +52,8 @@ this.ValidateNode = function (
   ctrls,
   ignoreNestedCtrl,
   validateOptionsCtrlValue,
-  ignoreQueryString
+  ignoreQueryString,
+  option_selected
 ) {
   if (!sourceFileData) {
     return;
@@ -73,7 +77,7 @@ this.ValidateNode = function (
     return filteredSourceRow;
   };
   var valCleaner = function(value){
-    if(value === undefined || value === null){
+    if(value === undefined || value === null || value==''){
       return "";
     }
     var ctlvalue = value.replace(/"/g, '""');
@@ -88,7 +92,8 @@ this.ValidateNode = function (
     nodeName,
     node,
     filteredNode,
-    filteredSourceRow
+    filteredSourceRow,
+    option_selected
   ) {
     if (nodeName === "A") {
       source = node.getAttribute("href");
@@ -102,12 +107,18 @@ this.ValidateNode = function (
       source = "";
     }
     let ctlId = valCleaner(filteredNode.getAttribute("Id")).replaceAll('"', "");
-    let ctrlText = valCleaner(filteredNode.innerText);
-    let altText = valCleaner(filteredNode.getAttribute("alt"));
-    let aliasText = valCleaner(filteredNode.getAttribute("alias"));
-
-    let compareString =
-      nodeName + "," + ctlId + "," + ctrlText + "," + aliasText + "," + source + "," + altText;
+    let ctrlText = valCleaner(filteredNode.innerText).replaceAll('"', "");
+    let altText = valCleaner(filteredNode.getAttribute("alt")).replaceAll('"', "");
+    let aliasText = valCleaner(filteredNode.getAttribute("alias")).replaceAll('"', "");
+    let compareString ='';
+    if (option_selected['text_validation']){
+      compareString =
+      nodeName + "," + ctlId + "," + ctrlText + "," + source + "," + altText;
+    }
+    else if (option_selected['alias_validation']){
+      compareString =
+      nodeName + "," + ctlId + "," + aliasText + "," + source + "," + altText;
+    }
 
     // Replace if any double quotes present on value & alias text
     //filteredSourceRow[2] = filteredSourceRow[2].replaceAll('"', "");
@@ -124,14 +135,25 @@ this.ValidateNode = function (
         filteredSourceRow[4].indexOf("?")
       );
     }
-    var combinedCsvRow = filteredSourceRow.join(",");
+    // Content validation based on switch provied by uer
+    var combinedCsvRow = "";
+    if (option_selected['text_validation']){
+      filteredSourceRow.splice(3,1);
+      combinedCsvRow = filteredSourceRow.join(",");
+    }
+    else if (option_selected['alias_validation']){
+      filteredSourceRow.splice(2,1);
+      combinedCsvRow = filteredSourceRow.join(",");
+    }
 
     if (combinedCsvRow !== compareString) {
       console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
       console.log('File: ' + combinedCsvRow);
       console.log('Page: ' + compareString);
-      filteredNode.classList.add("gale-validation-error-box");
-      return filteredNode;
+      // Bug fix: for tags like A, Img, for alias incorrect values "filteredNode" was not highliting with red box as Error.
+      const immediateParent = filteredNode.parentElement;
+      immediateParent.classList.add("gale-validation-error-box");
+      return immediateParent;
     }
     return null;
   };
@@ -157,7 +179,7 @@ this.ValidateNode = function (
       }
 
       ctrlName = controlDoc.tagName;
-      var fNode = compareSourceWithDestination(ctrlName,controlDoc,controlDoc,filteredSourceRow[i]);
+      var fNode = compareSourceWithDestination(ctrlName,controlDoc,controlDoc,filteredSourceRow[i],option_selected);
       if (fNode){
         errorCtrls.push(fNode);
       }
@@ -191,7 +213,7 @@ this.ValidateNode = function (
 
     for (i = 0; i < filteredSourceRow.length; i++) {
       var nodeName = filteredNode[i].nodeName;
-      var fNode = compareSourceWithDestination(nodeName,nodes[i],filteredNode[i],filteredSourceRow[i]);
+      var fNode = compareSourceWithDestination(nodeName,nodes[i],filteredNode[i],filteredSourceRow[i],option_selected);
       if (fNode){
         errorCtrls.push(fNode);
       }
@@ -273,4 +295,4 @@ aliasTextChk.addEventListener("change", function () {
       console.log("considerAliasAsText value is set.");
     }
   );
-});
+}); 

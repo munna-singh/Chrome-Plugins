@@ -23,6 +23,9 @@ function GetDOMStructureFromCurrentTab(ctrls) {
   var nodes = document.querySelectorAll(ctrls.join(","));
   var data = [];
   var valCleaner = function(value){
+    if(value === undefined || value === null || value==''){
+      return "";
+    }
     var ctlvalue = value.replace(/"/g, '""');
     ctlvalue = '"' + ctlvalue + '"';
     ctlvalue = ctlvalue.replace(/\u00a0/g, " ");
