@@ -1,9 +1,8 @@
 validateTag.addEventListener("click", async () => {
   // console.log(CSV_COLUMNS);
   validateOptionsCtrl = document.getElementById("match_options"); // validate options control
-  text_validation = document.getElementById("text_content_check").checked;
-  alias_validation = document.getElementById("alias_check").checked;
-  option_selected = {'text_validation':text_validation,'alias_validation':alias_validation};
+  var aliasTextChk = document.getElementById("alias-text").checked;
+  option_selected = {'text_validation':!aliasTextChk,'alias_validation':aliasTextChk};
   // console.log(validateOptionsCtrl.value);
   var srcFile = document.getElementById("src-lcaol-file");
   var ctrlToValidate = document.querySelectorAll(".ctrl-chkbox:checked");
@@ -294,4 +293,4 @@ aliasTextChk.addEventListener("change", function () {
       console.log("considerAliasAsText value is set.");
     }
   );
-});
+}); 
