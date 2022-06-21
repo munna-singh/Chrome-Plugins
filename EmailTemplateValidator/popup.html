@@ -54,7 +54,7 @@
               <tr>
                 <td>
                   <textarea id="htmlAttributes" name="htmlAttributes" rows="4"
-                  cols="37">a:-href&#013;img: -src,alt&#013;document:-lang</textarea>
+                    cols="37">a:-href&#013;img: -src,alt</textarea>
                 </td>
               </tr>
               <tr>
@@ -126,28 +126,31 @@
                       </td>
                     </tr>
                     <tr>
-                      
                       <td style="text-align: left ;">
+                        <input class='ctrl-chkbox' type='checkbox' name='h1'>
+                        <label for='h1'>H1</label><br>
+                        <input class='ctrl-chkbox' type='checkbox' name='h2'>
+                        <label for='h2'> H2</label><br>
+                        <input class='ctrl-chkbox' type='checkbox' name='h3'>
+                        <label for='h3'> H3</label><br>
+                        <input class='ctrl-chkbox' type='checkbox' name='h4'>
+                        <label for='h4'> H4</label><br>
+                      </td>
+                      <td style="text-align: left ;">
+                        <input class='ctrl-chkbox' type='checkbox' name='p'>
+                        <label for='p'>Paragraph(P)</label><br>
                         <input class='ctrl-chkbox' type='checkbox' name='a'>
                         <label for='a'> Anchor(a)</label><br>
                         <input class='ctrl-chkbox' type='checkbox' name='img'>
                         <label for='img'> Image (img)</label><br>
+                        <input class='ctrl-chkbox' type='checkbox' name='button'>
+                        <label for='button'> button (btn)</label><br>
                       </td>
-                      
-                    </tr>
-                    <tr>
-                      <td colspan='3'>
-                        <hr style="width:100%;">
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colspan='2' style="text-align: left ;width:66%;">
-                        <input type='radio' id='text_content_check' name="content_val_type" checked="checked">
-                        <label for='radio'>Validate content</label><br>
-                      </td>
-                      <td style="text-align: left ;width:34%">
-                        <input type='radio' id='alias_check' name="content_val_type">
-                        <label for='radio'>Validate alias</label><br>
+                      <td style='vertical-align: top; text-align:left'>
+                        <input class='ctrl-chkbox' type='checkbox' name='input'>
+                        <label for='input'>Input tag</label><br>
+                        <input class='ctrl-chkbox' type='checkbox' name='span'>
+                        <label for='span'> Span</label><br>
                       </td>
                     </tr>
                   </table>
@@ -179,9 +182,9 @@
               </tr>
               <tr>
                 <td>
-                  <table width="100%" style="text-align: right;">
+                  <table width="100%" style="margin-left: 8px;">
                     <tr>
-                      <td colspan='2' style="text-align: left ;">Choose Matching Logic:</td>
+                      <td><label for="matchlogic">Choose Matching Logic:</label></td>
                       <td>
                         <select name="match_options" id="match_options">
                           <option value="sequential">Sequential Match</option>
