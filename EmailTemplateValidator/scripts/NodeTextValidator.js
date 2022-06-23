@@ -158,7 +158,6 @@ this.ValidateNode = function (
     return null;
   };
 
-  debugger;
   // clearPreviousErrors();
   //Clear previous error message by removing the class
   var errorCtrls = document.querySelectorAll(".gale-validation-error-box");

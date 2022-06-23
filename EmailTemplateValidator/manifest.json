@@ -1,7 +1,7 @@
 {
     "name": "HTML Validator",
     "description": "Plugin to validate webpage and email templates that includes image, link, alt tag, etc.",
-    "version": "0.0.0.1",
+    "version": "0.0.0.3",
     "manifest_version": 3,
     "background": {
         "service_worker": "background.js"

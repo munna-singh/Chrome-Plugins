@@ -9,7 +9,7 @@ var globalValidator = document.getElementById("globalValidator");
 var ignoreFullURL = document.getElementById("ignore-full-URL");
 var ignoreNestedCtrlChk = document.getElementById("ignore-anchro-inside-ctrls");
 var aliasTextChk = document.getElementById("alias-text");
-
+var releaseVersion = document.getElementById("release-version");
 //Toggle box
 var htmlAttrsSwitch = document.getElementById("htmlAttrsChk");
 var linkValidatorSwitch = document.getElementById("linkValidatorChk");
@@ -17,6 +17,9 @@ var contentCheckSwitch = document.getElementById("htmlContentChk");
 
 //All content checkbox
 var contentValidationChks = document.querySelectorAll(".ctrl-chkbox");
+
+//Print version
+releaseVersion.innerHTML = 'V ' + chrome.runtime.getManifest()['version'];
 
 // Accordian
 let headings = document.querySelectorAll(".heading");
