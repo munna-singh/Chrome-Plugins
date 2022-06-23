@@ -63,6 +63,16 @@ this.ValidateNode = function (
     let allRows = sourceFileData.split(/\r?\n|\r/);
     //Filter data
     let filteredSourceRow = [];
+    let source_csv_columns = allRows[0].replace(/\s+/g, '');
+    let colCount = source_csv_columns.split(',').length;
+    let columns = "Ctrl,Id,Text,Alias,Link,Alt";
+
+    if (colCount!==6 || source_csv_columns.toLowerCase()!==columns.toLowerCase()){
+      console.log(source_csv_columns.toLowerCase());
+      alert(`Error: Source CSV should have 6 columns matching in same order i.e. ${columns}`);
+      return filteredSourceRow;
+    }
+
     for (x = 1; x < allRows.length; x++) {
       let splited = allRows[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
       if (
@@ -113,7 +123,7 @@ this.ValidateNode = function (
     let compareString ='';
     if (option_selected['text_validation']){
       compareString =
-      nodeName + "," + ctlId + "," + ctrlText + "," + source + "," + altText;
+      nodeName + "," + ctlId + "," + ctrlText + "," + aliasText + "," + source + "," + altText;
     }
     else if (option_selected['alias_validation']){
       compareString =
@@ -137,14 +147,11 @@ this.ValidateNode = function (
     }
     // Content validation based on switch provied by uer
     var combinedCsvRow = "";
-    if (option_selected['text_validation']){
-      filteredSourceRow.splice(3,1);
-      combinedCsvRow = filteredSourceRow.join(",");
+    if (option_selected['alias_validation']){
+      filteredSourceRow.splice(2,1); // Remove "Text" column for this validation and consider only "Alias"
     }
-    else if (option_selected['alias_validation']){
-      filteredSourceRow.splice(2,1);
-      combinedCsvRow = filteredSourceRow.join(",");
-    }
+    
+    combinedCsvRow = filteredSourceRow.join(","); // Combine all csv columns values in single csv string for comparison against HTML attr
 
     if (combinedCsvRow !== compareString) {
       console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
@@ -158,6 +165,7 @@ this.ValidateNode = function (
     return null;
   };
 
+  // debugger;
   // clearPreviousErrors();
   //Clear previous error message by removing the class
   var errorCtrls = document.querySelectorAll(".gale-validation-error-box");
@@ -169,6 +177,26 @@ this.ValidateNode = function (
   console.log(`Validation by - ${validateOptionsCtrlValue}`);
   if (validateOptionsCtrlValue == "id") {
     let filteredSourceRow = getFilteredSourceData(sourceFileData);
+    if (filteredSourceRow.length==0){
+      return;
+    }
+
+    nodes=[];
+    for (i = 0; i < filteredSourceRow.length; i++) {
+      var ctrlId_Csv = filteredSourceRow[i][1];
+      var controlDoc = document.getElementById(ctrlId_Csv);
+      if (!controlDoc) {
+        console.log(`Control by Id - (${ctrlId_Csv})/(${filteredSourceRow[i][0]}) not found`);
+        continue;
+      }
+      nodes.push(controlDoc);
+    }
+
+    if (filteredSourceRow.length !== nodes.length) {
+      if (!confirm("CSV row count(" + filteredSourceRow.length + ") and actual page controls found (" + nodes.length + "), does not match. Do you still want to continue with these ones ?")) {
+        return;
+      }
+    }
 
     for (i = 0; i < filteredSourceRow.length; i++) {
       var ctrlId_Csv = filteredSourceRow[i][1];
@@ -183,6 +211,7 @@ this.ValidateNode = function (
         errorCtrls.push(fNode);
       }
     }
+
   } else {
     //Sequential match
     let filteredSourceRow = getFilteredSourceData(sourceFileData);
@@ -200,14 +229,9 @@ this.ValidateNode = function (
       }
     }
     if (filteredSourceRow.length !== nodes.length) {
-      alert(
-        "Source column count(" +
-          filteredSourceRow.length +
-          ") and page control count(" +
-          nodes.length +
-          ") does not match."
-      );
-      return;
+      if (!confirm("CSV row count(" + filteredSourceRow.length + ") and actual page controls found (" + nodes.length + "), does not match. Do you still want to continue with these ones ?")) {
+        return;
+      }
     }
 
     for (i = 0; i < filteredSourceRow.length; i++) {

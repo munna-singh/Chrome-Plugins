@@ -1,6 +1,6 @@
 //Load local storage data
 function prepopulateData() {
-    debugger;
+    // debugger;
     chrome.storage.sync.get(null, function(items) {
         //Attributes data
         if(items.Attrs && items.Attrs !== null && items.Attrs !== ""){
