@@ -78,7 +78,7 @@ function contextMenuHandler(info, tab) {
   });
 }
 function TestContextMenu(info) {
-  debugger;
+  // debugger;
   if (typeof LAST_SELECTION != "undefined" && LAST_SELECTION) {
     let elem = LAST_SELECTION.anchorNode;
     let nextSibs = [];
@@ -149,7 +149,7 @@ function TestContextMenu(info) {
 
         //Update source code
         btnUpdate.onclick = function () {
-          debugger;
+          // debugger;
           let rte = tinymce.activeEditor.getContent();
           if (rte.startsWith("<p>")) {
             rte = rte.substring(3, rte.length - 4);
