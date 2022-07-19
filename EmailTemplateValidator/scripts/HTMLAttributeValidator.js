@@ -72,7 +72,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
         var source = nodes[x].getAttribute(ctrlTypeName);
         if (!ignoreForScreen) {
           console.log('Added control for display-' + ctrlTypeName);
-          attrValForCtrl += `${ctrlTypeName} = '${source}'  `;
+          attrValForCtrl += `${ctrlTypeName} = '${source}' <br/> `;
           atleastOneAttributeToDisplay = true;
         }
 
@@ -90,13 +90,12 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
             allControls.push(control);
           }
         }
-
-        if (!ignoreForScreen) {
-          attrValForCtrl += "</span>";
-          $(attrValForCtrl).insertBefore(nodes[x]);
-        }
       }
-
+      if(atleastOneAttributeToDisplay){
+        attrValForCtrl += "</span>";
+        $(attrValForCtrl).insertBefore(nodes[x]);
+      }
+      
 
       if (valueEmpty === true) {
         nodes[x].classList.add("gale-validation-error-box");
@@ -120,8 +119,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
   else{
     alert("HTML ATTRIBUTES:: Validation is successful.");
   }
-
-  if (ctrlWithIssue.length > 0) {
+  //if (ctrlWithIssue.length > 0) {
     // create a style element
     const style = document.createElement("style");
 
@@ -155,7 +153,7 @@ function ValidateHTMLAttributes(ctrlsWithAttributes) {
       style.setAttribute("id", "my-gale-error-message-css");
       head.appendChild(style);
     }
-  }
+  //}
 }
 
 htmlAttributeText.addEventListener("blur", async () => {

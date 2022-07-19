@@ -16,9 +16,10 @@ function ValidateHrefLinks() {
   var urls = {};
   var req_params = [];
   var links = document.querySelectorAll("a");
+  debugger;
   links.forEach((link) => {
     const val = link.getAttribute("href");
-    if (val !== "#" && val !== "" && val !== "/" && val != null && !val.startsWith("javascript" && !val.startsWith("#") && !val.startsWith("mailto" && !val.startsWith("tel")))) {
+    if (val && val !== "#" && val !== "" && val !== "/" && !val.startsWith("javascript") && !val.startsWith("#") && !val.startsWith("mailto") && !val.startsWith("tel")) {
       req_params.push(link.href);
       var oneurl = {
         text: link.innerText,
