@@ -151,7 +151,7 @@ this.ValidateNode = function (
       filteredSourceRow.splice(2,1); // Remove "Text" column for this validation and consider only "Alias"
     }
     
-    combinedCsvRow = filteredSourceRow.join(","); // Combine all csv columns values in single csv string for comparison against HTML attr
+    combinedCsvRow = filteredSourceRow.join(",").replaceAll('"',''); // Combine all csv columns values in single csv string for comparison against HTML attr
 
     if (combinedCsvRow !== compareString) {
       console.log(`Mismatch content:> Row No - ${i + 1}---> \n`);
